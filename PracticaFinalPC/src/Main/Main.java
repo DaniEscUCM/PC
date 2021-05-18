@@ -1,8 +1,7 @@
 package Main;
 
 /**
- * Alessandro de Armas Marqués
- * Daniela Alejandra Escobar Suarez
+ * Alessandro de Armas Marqués Daniela Alejandra Escobar Suarez
  * 
  */
 
