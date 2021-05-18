@@ -2,6 +2,7 @@
 import Main.Fichero;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Servidor {
 
@@ -9,8 +10,7 @@ public class Servidor {
 
            
             ObjectOutputStream objectOutput = new ObjectOutputStream(socket.getOutputStream());
-            ) {
- 
+    
             List<Fichero> listF = new ArrayList<>();
  
             listF.add(new Fichero(   ));
