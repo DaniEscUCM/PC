@@ -6,7 +6,8 @@ import java.net.Socket;
 import java.io.OutputStream;
 import java.io.InputStream;
 import java.io.FileInputStream;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.Semaphore; 
+
 
 public class Fichero implements Serializable {
 
