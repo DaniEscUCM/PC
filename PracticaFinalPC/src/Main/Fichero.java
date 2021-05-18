@@ -1,5 +1,4 @@
 package Main;
-
 import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -7,7 +6,6 @@ import java.io.OutputStream;
 import java.io.InputStream;
 import java.io.FileInputStream;
 import java.util.concurrent.Semaphore; 
-
 
 public class Fichero implements Serializable {
 
@@ -80,7 +78,7 @@ public class Fichero implements Serializable {
 
             v = filin.read();
             read = false;
-            sem_read.acquire(); // el cliente si está leyendo no puede escribir, espera a que el cliente le deje
+            sem_read.acquire(); //PT el cliente si está leyendo no puede escribir, espera a que el cliente le deje
         }
         finish = true;
         sem_read.release();// ??
