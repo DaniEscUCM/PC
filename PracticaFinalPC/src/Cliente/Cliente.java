@@ -1,8 +1,17 @@
-import Main.Fichero;
+package Cliente;
+
 import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.io.IOException;
 import java.io.InputStream;
+
+/* Clase principal de la aplicación cliente. Tendria al menos los siguientes
+atributos: nombre de usuario, direccion ip de la maquina. Puedes tener tambi´en como
+atributos los objetos que proporcionan la comunicaci´on con el servidor (socket y
+flujos). Es responsable de llevar a cabo la comunicaci´on con el servidor, y cuando
+sea necesario ejecutar el env´ıo o recepci´on de informaci´on. Adem´as ofrece el soporte
+para la interacci´on con el usuario del sistema.
+ */
 
 public class Cliente {
 
@@ -29,7 +38,7 @@ public class Cliente {
         InputStream()
         Fichero f = (Fichero) objectInput.readObject();
        
-        
+        ArrayList
 
         /*
           - leer nombre teclado 
