@@ -61,28 +61,40 @@ public class Fichero implements Serializable {
         }
     }
 
+
     private void nuevo_hilo() throws Exception {
-        OutputStream o = s.getOutputStream();
-        InputStream i = s.getInputStream();
-        i.read(buf);
+        Thread hilo= new Thread(){
+            @Override
+            public void run(){
+                try{
+                OutputStream o = s.getOutputStream();
+                InputStream i = s.getInputStream();
+                i.read(buf);
 
-        name = new String(buf);
-        FileInputStream filin = new FileInputStream(name);
+                name = new String(buf);
+                FileInputStream filin = new FileInputStream(name);
 
-        int v = filin.read();
-        while (v != -1) {
-            read = true;
-            o.write((char) v);
-            sem_write.release();// libera al cliente para que lea
-            // sem_read.acquire();// PT
+                int v = filin.read();
+                while (v != -1) {
+                    read = true;
+                    o.write((char) v);
+                    sem_write.release();// libera al cliente para que lea
+                    // sem_read.acquire();// PT
 
-            v = filin.read();
-            read = false;
-            sem_read.acquire(); //PT el cliente si está leyendo no puede escribir, espera a que el cliente le deje
-        }
-        finish = true;
-        sem_read.release();// ??
-        filin.close();
+                    v = filin.read();
+                    read = false;
+                    sem_read.acquire(); //PT el cliente si está leyendo no puede escribir, espera a que el cliente le deje
+                }
+                finish = true;
+                sem_read.release();// ??
+                filin.close();
+                }
+                catch(Exception e){
+                    //ups
+                }
+            }
+        };
+        
     }
 
 }
