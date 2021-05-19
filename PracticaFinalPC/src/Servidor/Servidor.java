@@ -18,7 +18,7 @@ import Oyentes.*;
  */
 public class Servidor {
     // tabla de usuarios,con flujo de entrada[0] y flujo de salida[1]
-    private Map<Usuario, Object[]> tabla_usuarios = new HashMap<Usuario, Object[]>();
+    private Map<Usuario, Object[]> tabla_usuarios = new HashMap<Usuario, Object[]>();//String Id_usuario
 
     // tabla de informacion son los ficheros que se quieren compartir con los demas
     private Map<Usuario, ArrayList<Fichero>> tabla_informacion = new HashMap<Usuario, ArrayList<Fichero>>();
@@ -35,7 +35,7 @@ public class Servidor {
             try {
                 s = listen.accept();
                 (new OyenteCliente(s)).start();
-
+                //tabla_usuarios.add()
                 /*
                  * ObjectOutputStream objectOutput = new
                  * ObjectOutputStream(s.getOutputStream());

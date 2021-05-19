@@ -13,7 +13,12 @@ import java.net.Socket;
 public class OyenteCliente extends Thread implements Runnable {
 
     private Socket s;
-    //private Servidor ser;
+    ObjectInputStream fin;
+    ObjectOutputStream fout;
+
+    //private Servidor ser; --> lo dice en el video 47 33:15, se haga como en prácticas anteriores,
+    // pasar referencias de las variables. Como los IntReferences, los oyentes sería los que modifican esta 
+    //información, se controlaría con concurrencia, semáforos?
 
     public OyenteCliente(Socket s) {
         this.s = s;
@@ -21,7 +26,9 @@ public class OyenteCliente extends Thread implements Runnable {
     
     @Override
     public void run() {
-        ObjectInputStream fin = new ObjectInputStream(s.getInputStream());
+        try{
+        fin = new ObjectInputStream(s.getInputStream());
+        fout = new ObjectOutputStream(s.getOutputStream());
         while (true) {
 
             Mensaje m = (Mensaje) fin.readObject();
@@ -33,6 +40,9 @@ public class OyenteCliente extends Thread implements Runnable {
              */
             //excute(ser)
 
+        }
+        }catch(Exception e){
+            System.out.println(e);
         }
 
     }
