@@ -24,7 +24,7 @@ public class Fichero implements Serializable {
     private Boolean finish;// indica al cliente si terminó de leer
     // private Boolean write;
 
-    public Fichero(int puerto, Socket _s, Boolean read, Boolean write, Semaphore sem_read, Semaphore sem_write) {// s?
+    public Fichero(int puerto, Socket _s, Boolean read, Boolean write, Semaphore sem_read, Semaphore sem_write) {
         try {
             this.read = read;
             // this.write=write;
@@ -67,23 +67,23 @@ public class Fichero implements Serializable {
             @Override
             public void run(){
                 try{
-                OutputStream o = s.getOutputStream();
-                InputStream i = s.getInputStream();
-                i.read(buf);
+                    OutputStream o = s.getOutputStream();
+                    InputStream i = s.getInputStream();
+                    i.read(buf);
 
-                name = new String(buf);
-                FileInputStream filin = new FileInputStream(name);
+                    name = new String(buf);
+                    FileInputStream filin = new FileInputStream(name);
 
-                int v = filin.read();
-                while (v != -1) {
-                    read = true;
-                    o.write((char) v);
-                    sem_write.release();// libera al cliente para que lea
-                    // sem_read.acquire();// PT
+                    int v = filin.read();
+                    while (v != -1) {
+                        read = true;
+                        o.write((char) v);
+                        sem_write.release();// libera al cliente para que lea
+                        // sem_read.acquire();// PT
 
-                    v = filin.read();
-                    read = false;
-                    sem_read.acquire(); //PT el cliente si está leyendo no puede escribir, espera a que el cliente le deje
+                        v = filin.read();
+                        read = false;
+                        sem_read.acquire(); //PT el cliente si está leyendo no puede escribir, espera a que el cliente le deje
                 }
                 finish = true;
                 sem_read.release();// ??
