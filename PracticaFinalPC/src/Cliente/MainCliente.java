@@ -1,8 +1,13 @@
+<<<<<<<HEAD:PracticaFinalPC/src/Cliente/MainCliente.java
 package Cliente;
 
+=======
+
+import Main.Fichero;
+
+>>>>>>>8f ac4eb825412ef7453fa5ec60369ab4feb138e7:PracticaFinalPC/src/Cliente.java
 import java.io.ObjectInputStream;
 import java.net.Socket;
-import java.io.IOException;
 import java.io.InputStream;
 
 /* Clase principal de la aplicación cliente. Tendria al menos los siguientes
@@ -23,6 +28,7 @@ public class MainCliente {
     private Scanner in;
 
     public static void main(String[] args) throws IOException {
+
         Cliente client=new Cliente();
         //cin>>x;
 
@@ -37,27 +43,28 @@ public class MainCliente {
         nombre_de_usuario=words[0];
         ip=words[1];
         Usuario user=new Usuario()
-        
+
+  
         ObjectInputStream objectInput = new ObjectInputStream(socket.getInputStream());//Servidor/Fichero
       
         InputStream()
         Fichero f = (Fichero) objectInput.readObject();
-       
-        ArrayList
-
         /*
           - leer nombre teclado 
           - crear socket con servidor 
+          - crear nuevo thread OyenteServidor para leer el socket 
+          - enviar MENSAJE_CONEXION 
+          - establecer  menu con usuario: 
+          		consultar lista usuarios: enviar MENSAJE_LISTA_USUARIOS
+          -pedir fichero enviar MENSAJE_PEDIR_FICHERO 3 
+          -salir enviar MENSAJE_CERRAR_CONEXION
           - crear nuevo thread
           OyenteServidor para leer el socket
            - enviar MENSAJE_CONEXION - establecer
           menu con usuario: consultar lista usuarios: enviar MENSAJE_LISTA_USUARIOS
           -pedir fichero enviar MENSAJE_PEDIR_FICHERO 3 -salir enviar
           MENSAJE_CERRAR_CONEXION
-          
-         */
-
-        
+*/   
 
     }
 }
