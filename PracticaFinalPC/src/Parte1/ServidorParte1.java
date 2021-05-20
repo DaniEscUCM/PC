@@ -1,5 +1,6 @@
 package Parte1;
 
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -13,56 +14,46 @@ import java.io.ObjectOutputStream;
  * 
  */
 
-public class ServidorParte1 extends Thread {
+public class ServidorParte1  {
 
-    private ServerSocket listen;
-    private Socket s;
-    // private byte[] buf;
-    // private int puerto;
-
-    /*
-     * public ServidorParte1(int puerto) { this.puerto = puerto; }
-     */
-    @Override
-    public void run() {
+    @SuppressWarnings("resource")
+	public static void main(String[] args) {
         try {
+        	ServerSocket listen;
+        	Socket s;
             listen = new ServerSocket(1234);
-            //while (true) {
-                s = listen.accept();// cliente
-                System.out.println("Cliente conectado");
-                Thread a=new Thread() {
-                    @Override
-                    public void run() {
-                        nuevo_hilo(s);
-                    }
-                };
-                a.start();
-                a.join();
-           // }
+            System.out.println(InetAddress.getLocalHost());
+            System.out.println("esperando...");
+            s = listen.accept();// cliente
+            System.out.println("Cliente conectado");
+            Thread a=new Thread() {
+            @Override
+	            public void run() {
+	                     nuevo_hilo(s);
+	            }
+            };
+            a.start();
+            a.join();
+            s.close();
+            listen.close();
 
         } catch (Exception e) {
             System.out.println(e + " Servidor");
         }
     }
 
-    private void nuevo_hilo(Socket s_priv) {
+    private static void nuevo_hilo(Socket s_priv) {
         try {
 
-            ObjectOutputStream o = new ObjectOutputStream(s.getOutputStream());
-            System.out.println("out de servidor");
-            ObjectInputStream i = new ObjectInputStream(s.getInputStream());
-            System.out.println("in de servidor");
-            /*
-             * i.read(buf);
-             * 
-             * String name = new String(buf); FileInputStream filin = new
-             * FileInputStream(name); int v = filin.read();
-             * 
-             * while (v != -1) { o.write((char) v); v = filin.read(); } filin.close();
-             */
-
+            ObjectOutputStream o = new ObjectOutputStream(s_priv.getOutputStream());
+           
+            ObjectInputStream i = new ObjectInputStream(s_priv.getInputStream());
+        
+            
             Prueba a = (Prueba) i.readObject();
-            o.writeObject(a);
+            Prueba b=new Prueba(a.getData()+" Saludos del servidor");
+            System.out.println(b.getData());
+            o.writeObject(b);
         } catch (Exception e) {
             System.out.println(e);
         }
