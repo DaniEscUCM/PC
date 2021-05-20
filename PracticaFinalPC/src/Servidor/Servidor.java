@@ -3,6 +3,7 @@ package Servidor;
 import java.util.*;
 import Mensajes.*;
 import java.io.*;
+import java.net.InetAddress;
 import java.util.HashMap;
 
 public class Servidor {// monitor?? synchronized??
@@ -14,9 +15,10 @@ public class Servidor {// monitor?? synchronized??
     private Map<String, ArrayList<Fichero>> tabla_informacion = new HashMap<String, ArrayList<Fichero>>();
 
     private String direccion_ip = "1.1.1.1";
-    private int puerto = 666;
+    private final int PUERTO = 1234;
 
     public Servidor() {
+    	//InetAddress a=new InetAddress;
         loadClients();
     }
 

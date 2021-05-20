@@ -1,14 +1,9 @@
-<<<<<<<HEAD:PracticaFinalPC/src/Cliente/MainCliente.java
+
 package Cliente;
 
-=======
-
-import Main.Fichero;
-
->>>>>>>8f ac4eb825412ef7453fa5ec60369ab4feb138e7:PracticaFinalPC/src/Cliente.java
-import java.io.ObjectInputStream;
+import java.io.IOException;
 import java.net.Socket;
-import java.io.InputStream;
+import java.util.Scanner;
 
 /* Clase principal de la aplicación cliente. Tendria al menos los siguientes
 atributos: nombre de usuario, direccion ip de la maquina. Puedes tener tambi´en como
@@ -28,14 +23,9 @@ public class MainCliente {
     private Scanner in;
 
     public static void main(String[] args) throws IOException {
-
+/*
         Cliente client=new Cliente();
-        //cin>>x;
 
-        //InputStream input = new InputStream();
-
-        //imprimir System.out.println(...)
-        //leer System.in.read(buffer)
         System.out.println("Bienvenido al sistema introduce USUARIO e IP");
         String nombre_de_usuario;
         String ip;
@@ -48,7 +38,7 @@ public class MainCliente {
         ObjectInputStream objectInput = new ObjectInputStream(socket.getInputStream());//Servidor/Fichero
       
         InputStream()
-        Fichero f = (Fichero) objectInput.readObject();
+        Fichero f = (Fichero) objectInput.readObject();*/
         /*
           - leer nombre teclado 
           - crear socket con servidor 

@@ -27,16 +27,18 @@ public class ServidorParte1 extends Thread {
     public void run() {
         try {
             listen = new ServerSocket(1234);
-            while (true) {
+            //while (true) {
                 s = listen.accept();// cliente
                 System.out.println("Cliente conectado");
-                new Thread() {
+                Thread a=new Thread() {
                     @Override
                     public void run() {
                         nuevo_hilo(s);
                     }
                 };
-            }
+                a.start();
+                a.join();
+           // }
 
         } catch (Exception e) {
             System.out.println(e + " Servidor");
@@ -59,7 +61,7 @@ public class ServidorParte1 extends Thread {
              * while (v != -1) { o.write((char) v); v = filin.read(); } filin.close();
              */
 
-            String a = (String) i.readObject();
+            Prueba a = (Prueba) i.readObject();
             o.writeObject(a);
         } catch (Exception e) {
             System.out.println(e);

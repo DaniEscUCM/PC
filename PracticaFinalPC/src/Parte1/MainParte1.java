@@ -16,16 +16,18 @@ public class MainParte1 {
             System.out.println("out de cliente");
             ObjectInputStream fin = new ObjectInputStream(s.getInputStream());
             System.out.println("in de cliente");
-            int n = -1;
+            /*int n = -1;
             n = in.nextInt();
-            while (n != -1) {
+            while (n != -1) {*/
+            System.out.println("Escribe mensaje:");
                 String mensaje = "";
                 mensaje = in.nextLine();
-                fout.writeObject(mensaje);
-                String good = (String) fin.readObject();
-                System.out.println(good);
-                n = in.nextInt();
-            }
+            Prueba x=new Prueba(mensaje);
+                fout.writeObject(x);
+                Prueba good = (Prueba) fin.readObject();
+                System.out.println(good.getData());
+            //    n = in.nextInt();
+          //  }
             s.close();
             in.close();
             // esperala conexion de un cliente y
