@@ -24,10 +24,10 @@ public abstract class Mensaje {
     }
 
     public String getOrigen() {
-        return this.tipo_de_mensaje;
+        return this.origen;
     }
 
-    public int getTipo() {
+    public String getTipo() {
         return this.tipo;
     }
 
@@ -36,7 +36,7 @@ public abstract class Mensaje {
     }
 
     protected boolean matchMensajeName(String name) {
-        return this.tipo_de_mensaje.equalsIgnoreCase(name);
+        return this.tipo.equalsIgnoreCase(name);
     }
 
 }

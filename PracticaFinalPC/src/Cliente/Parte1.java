@@ -1,4 +1,4 @@
-package Cliente;
+package Parte1;
 
 import java.net.ServerSocket;
 import java.net.Socket;

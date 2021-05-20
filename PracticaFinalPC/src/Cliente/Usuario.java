@@ -1,6 +1,7 @@
 package Cliente;
 
 import java.util.ArrayList;
+import Mensajes.Fichero;
 
 /**
  * Guarda informacion para un usuario registrado en el sistema. Tendra al menos
@@ -15,10 +16,11 @@ public class Usuario {
     private String id_usuario;
 
     // Lista de informacion compartida , podiria ser un map??
-    ArrayList<Fichero> shared_info;
+    ArrayList<Fichero> shared_info=new ArrayList<>();
 
-    public Usuario() {
-
+    public Usuario(String id_usuario, String direccion_ip) {
+        this.id_usuario = id_usuario;
+        this.direccion_ip = direccion_ip;
     }
 
     public String getDireccion_ip() {
