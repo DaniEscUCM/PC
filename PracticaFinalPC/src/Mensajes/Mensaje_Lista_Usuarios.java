@@ -11,14 +11,15 @@ public class Mensaje_Lista_Usuarios extends Mensaje {
     public Mensaje_Lista_Usuarios() {
         super(tipo);
     }
-    public Mensaje_Lista_Usuarios(String origen,String destino) {
+
+    public Mensaje_Lista_Usuarios(String origen, String destino) {
         super(tipo, origen, destino);
-        this.origen = origen ;
-        this.destino = destino ;
+        this.origen = origen;
+        this.destino = destino;
     }
 
     public boolean execute(Servidor servidor) {
-        servidor.lista_usuarios(this.origen,this.destino);
+        servidor.lista_usuarios(this.origen, this.destino);
         return false;
     }
 }

@@ -7,8 +7,8 @@ import java.io.*;
 import java.net.Socket;
 
 /**
- * Implementa el interfaz Runnable y hereda de la clase Thread, y es usada
- * para proporcionar concurrencia respecto a las sesiones de cada usuario con el
+ * Implementa el interfaz Runnable y hereda de la clase Thread, y es usada para
+ * proporcionar concurrencia respecto a las sesiones de cada usuario con el
  * servidor. El metodo run y se limita a hacer lecturas del flujo de entrada
  * correspondiente, realizar las acciones oportunas, y devolver los resultados
  * en forma de mensajes que seran enviados al usuario o usuarios involucrados.
@@ -33,68 +33,20 @@ public class OyenteCliente extends Thread {
 
     @Override
     public void run() {
-            try {
-            fin = new ObjectInputStream(s.getInputStream());
-            fout = new ObjectOutputStream(s.getOutputStream());
+        try {
+            fin = new ObjectInputStream(s.getInputStream());// entrada
+            fout = new ObjectOutputStream(s.getOutputStream());// salida
             while (true) {
 
                 Mensaje m = (Mensaje) fin.readObject();
-
-                m.execute(server);
-                
-                
-                switch (m.getTipo()) {
-                    case "Mensaje_Cerrar_Conexion": {
-                    	//eliminar la informacion del cliente en las tablas envio de mensaje de
-                        // confirmacion fout
-                         
-                    	// m.execute(server);
-                    	/*
-                        String id = fin.readUTF(); // pedir leer al cliente
-                        server.deleteUser(id);
-                        fout.writeBytes("Conexion Cerrada");
-                        break;
-                        */
+                switch (m.getTipo()){
+                    case "Mensaje_Conexion":{
+                        //server.???(mensaje.datos)
+                        break;}
+                    default : {
+                        System.err.println("DANGER unknown message");
+                    
                     }
-                    case "Mensaje_Conexion": {
-                        /**
-                         * Guardar informacion del usuario en las tablas y enviar mensaje de
-                         * confirmacion fout
-                         */
-                        String id = fin.readLine();// pedir leer al cliente
-                        // String ip =;
-                        // aqui hay que leer el ArrayList de alguna manera
-                        server.addUser(id, fin, fout);
-                        fout.writeBytes("Conexion Establecida");
-                        break;
-                    }
-                    case "Mensaje_Lista_Usuarios": {
-                        /**
-                         * crear un mensaje con la informacion de usuarios del sistema
-                         *  envio de mensaje de confirmacion lista de usuarios
-                         */
-
-                         server.info().
-                        break;
-                    }
-                    case "Mensaje_Pedir_fichero": {
-                        /**
-                         * buscar usuario que contiene el fichero y obtener fout2 envio mensaje
-                         * EMITIR_FICHERO por fout2
-                         */
-                        break;
-                    }
-                    case "Mensaje_Preparado_ClienteServidor": {
-                        /**
-                         * buscar fout1 (flujo del cliente al que hay qie enviar la informacion) envio
-                         * de fout1 mensaje PREARADO_SERVIDOR_CLIENTE
-                         */
-                        break;
-                    }
-
-                }
-
-                // excute(ser)
 
             }
         } catch (Exception e) {

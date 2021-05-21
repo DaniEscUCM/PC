@@ -1,5 +1,6 @@
 package Mensajes;
 
+import Cliente.Cliente;
 import Servidor.Servidor;
 
 public class Mensaje_Conexion extends Mensaje {
@@ -9,19 +10,24 @@ public class Mensaje_Conexion extends Mensaje {
     private String destino;
 
     public Mensaje_Conexion() {
-    	super(tipo);
+        super(tipo);
     }
-    
-    public Mensaje_Conexion(String origen,String destino) {
+
+    public Mensaje_Conexion(String origen, String destino) {
         super(tipo, origen, destino);
         this.origen = origen;
         this.destino = destino;
     }
 
     public boolean execute(Servidor servidor) {
-        servidor.establecerConexion(this.origen,this.destino);
+        servidor.establecerConexion(this.origen, this.destino);
         return false;
     }
 
-	
+    @Override
+    public boolean execute(Cliente c) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
 }

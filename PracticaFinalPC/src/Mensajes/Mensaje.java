@@ -1,16 +1,16 @@
 package Mensajes;
 
 import Servidor.Servidor;
+import Cliente.Cliente;
 
 /*
-   * Sirve como ra覺z de la jerarqu覺a de mensajes que debemos dise鎙r. Tiene como
+   * Sirve como ra覺z de la jerarqu覺a de mensajes que debemos dise嚙窮r. Tiene como
    * atributos al tipo, origen y destino del mensaje en cuestion;
    */
-public abstract class Mensaje {
+public abstract class Mensaje implements Serializable {
     private String tipo;
     private String origen;
     private String destino;
-
 
     public Mensaje(String tipo, String origen, String destino) {
         this.tipo = tipo;
@@ -19,10 +19,10 @@ public abstract class Mensaje {
     }
 
     public Mensaje(String tipo) {
-		this.tipo = tipo;
-	}
+        this.tipo = tipo;
+    }
 
-	public String getDestino() {
+    public String getDestino() {
         return this.destino;
     }
 
@@ -33,7 +33,5 @@ public abstract class Mensaje {
     public String getTipo() {
         return this.tipo;
     }
-    
-    public abstract boolean execute(Servidor s);
 
 }
