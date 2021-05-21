@@ -1,26 +1,26 @@
 package Mensajes;
 
+import Servidor.Servidor;
+
 public class Mensaje_Pedir_Fichero extends Mensaje {
 
-    public Mensaje_Lista_Usuarios() {
+	static private String tipo = "Mensaje_Pedir_Fichero";
+    private String origen;
+    private String destino;
 
+    public Mensaje_Pedir_Fichero() {
+        super(tipo);
     }
 
-    @Override
-    public String getDestino() {
-        // TODO Auto-generated method stub
-        return null;
+    public Mensaje_Pedir_Fichero(String origen, String destino) {
+        super(tipo,origen, destino);
+        this.origen = origen;
+        this.destino= destino;
     }
 
-    @Override
-    public String getOrigen() {
-        // TODO Auto-generated method stub
-        return null;
+    public boolean execute(Servidor servidor) {
+        servidor.pedir_fichero(this.origen,this.destino);
+        return false;
     }
-
-    @Override
-    public int getTipo() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
+    
 }

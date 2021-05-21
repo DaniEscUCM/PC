@@ -1,26 +1,26 @@
 package Mensajes;
 
+import Servidor.Servidor;
+
 public class Mensaje_Preparado_ClienteServidor extends Mensaje {
 
-    public Mensaje_ListaMensaje_Preparado_ClienteServidor() {
+	static private String tipo = "Mensaje_Preparado_ClienteServidor";
+    private String origen;
+    private String destino;
 
+    public Mensaje_Preparado_ClienteServidor() {
+        super(tipo);
     }
 
-    @Override
-    public String getDestino() {
-        // TODO Auto-generated method stub
-        return null;
+    public Mensaje_Preparado_ClienteServidor(String origen, String destino) {
+        super(tipo,origen, destino);
+        this.origen = origen;
+        this.destino= destino;
     }
 
-    @Override
-    public String getOrigen() {
-        // TODO Auto-generated method stub
-        return null;
+    public boolean execute(Servidor servidor) {
+        servidor.preparado_ciliente_servidor(this.origen,this.destino);
+        return false;
     }
-
-    @Override
-    public int getTipo() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
+    
 }

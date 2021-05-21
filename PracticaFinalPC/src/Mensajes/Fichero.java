@@ -18,9 +18,9 @@ public class Fichero implements Serializable {
     private String data="";
     
     public Fichero(String name){
-    	Scanner in=new Scanner(name);    	
+    	Scanner in = new Scanner(name);    	
     	while(in.hasNextLine()) {
-    		String info=in.nextLine()+System.lineSeparator();
+    		String info = in.nextLine()+System.lineSeparator();
     		data+=info;
     	}
     	in.close();

@@ -19,8 +19,8 @@ public class Usuario {
     private String id_usuario;
 
 
-    ArrayList<String> shared_info=new ArrayList<String>();
-    Map<String,Fichero> info=new HashMap<String,Fichero>();
+    ArrayList<String> shared_info = new ArrayList<String>();
+    Map<String,Fichero> info = new HashMap<String,Fichero>();
     
     public Usuario(String id_usuario, String direccion_ip,ArrayList<String> lis,Map<String,Fichero> m) {
         this.id_usuario = id_usuario;

@@ -1,29 +1,27 @@
 package Mensajes;
 
+import Servidor.Servidor;
+
 public class Mensaje_Conexion extends Mensaje {
 
-    private String tipo = "Mensaje_Conexion";
-    private String help = "abre la conexion";
-
+    static private String tipo = "Mensaje_Conexion";
     private String origen;
     private String destino;
 
     public Mensaje_Conexion() {
-        super(tipo, help, origen, destino);
+    	super(tipo);
+    }
+    
+    public Mensaje_Conexion(String origen,String destino) {
+        super(tipo, origen, destino);
+        this.origen = origen;
+        this.destino = destino;
     }
 
-    @Override
-    public String getDestino() {
-        return this.destino;
+    public boolean execute(Servidor servidor) {
+        servidor.establecerConexion(this.origen,this.destino);
+        return false;
     }
 
-    @Override
-    public String getOrigen() {
-        return this.tipo_de_mensaje;
-    }
-
-    @Override
-    public int getTipo() {
-        return this.tipo;
-    }
+	
 }

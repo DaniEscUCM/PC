@@ -36,13 +36,14 @@ public class MainCliente {
     	Scanner in=new Scanner(System.in);
     	System.out.println("Bienvenido Usuario");
     	Usuario user;
-    	Boolean go=true;
+    	Boolean go = true;
     	String server_ip="localhost";
+    	
     	if(args.length>0) {
     		String user_id= args[0];
-    		String user_ip=args[1];
-    		ArrayList<String> names=new ArrayList<String>();
-    		Map<String,Fichero> files=new HashMap<String,Fichero>();
+    		String user_ip= args[1];
+    		ArrayList<String> names = new ArrayList<String>();
+    		Map<String,Fichero> files = new HashMap<String,Fichero>();
     		for(int i=2;i<args.length-1;i++) {
     			Fichero x=new Fichero(args[i]);
     			files.put(x.getName(),x);
@@ -51,26 +52,26 @@ public class MainCliente {
     		user=new Usuario(user_id, user_ip,names,files);
     	}
     	else {
-    		System.out.print("Por favor, introduce nombre de usuario y dirección ip: ");
+    		System.out.print("Por favor, introduce nombre de usuario y direcci�n ip: ");
             String[] words = in.nextLine().toLowerCase().trim().split ("\\s+");
             String nombre_de_usuario=words[0];
             String ip=words[1];
-            user=new Usuario(nombre_de_usuario,ip);
+            user = new Usuario(nombre_de_usuario,ip);
             System.out.print("Introduzca IP de servidor: ");
-            words=in.nextLine().toLowerCase().trim().split ("\\s+");
-            server_ip=words[0];
+            words = in.nextLine().toLowerCase().trim().split ("\\s+");
+            server_ip = words[0];
     	}
     	Cliente client=new Cliente(user);
     	Socket s=new Socket(server_ip,1234);
     	(new OyenteServidor(client,s)).start();
     	while(go) {
-    		 String[] words = in.nextLine().toLowerCase().trim().split ("\\s+");//espera por una instrucción
+    		 String[] words = in.nextLine().toLowerCase().trim().split ("\\s+");//espera por una instruccion
     		 
     		 switch(words[0]) {
     			 case "exit":{
     				 System.out.println("Cerrando todas las conexiones");
     				 //se cierran todas las conexiones
-    				 go=false;
+    				 go = false;
     				 break;
     			 }
     			 default:{

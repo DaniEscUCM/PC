@@ -1,29 +1,24 @@
 package Mensajes;
 
+import Servidor.Servidor;
+
 public class Mensaje_Lista_Usuarios extends Mensaje {
 
-    private String tipo = "Mensaje_Lista_Usuarios";
-    private String help = "devuelve la lista de usuarios";
-
+    static private String tipo = "Mensaje_Lista_Usuarios";
     private String origen;
     private String destino;
 
     public Mensaje_Lista_Usuarios() {
-        super(tipo, help, origen, destino);
+        super(tipo);
+    }
+    public Mensaje_Lista_Usuarios(String origen,String destino) {
+        super(tipo, origen, destino);
+        this.origen = origen ;
+        this.destino = destino ;
     }
 
-    @Override
-    public String getDestino() {
-        return this.destino;
-    }
-
-    @Override
-    public String getOrigen() {
-        return this.tipo_de_mensaje;
-    }
-
-    @Override
-    public int getTipo() {
-        return this.tipo;
+    public boolean execute(Servidor servidor) {
+        servidor.lista_usuarios(this.origen,this.destino);
+        return false;
     }
 }

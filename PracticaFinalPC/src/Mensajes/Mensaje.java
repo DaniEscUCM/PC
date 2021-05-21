@@ -1,25 +1,28 @@
+package Mensajes;
+
+import Servidor.Servidor;
 
 /*
-   * Sirve como ra覺z de la jerarqu覺a de mensajes que debemos dise簽ar. Tiene como
+   * Sirve como ra覺z de la jerarqu覺a de mensajes que debemos dise鎙r. Tiene como
    * atributos al tipo, origen y destino del mensaje en cuestion;
    */
 public abstract class Mensaje {
-
     private String tipo;
-    private final String help;
     private String origen;
     private String destino;
 
-    protected static final String incorrectArgsMsg = "Incorrect argument format";
 
-    public Mensaje(String tipo, String help, String origen, String destino) {
-        this.tipo_de_mensaje = tipo;
-        this.help = help;
+    public Mensaje(String tipo, String origen, String destino) {
+        this.tipo = tipo;
         this.origen = origen;
         this.destino = destino;
     }
 
-    public String getDestino() {
+    public Mensaje(String tipo) {
+		this.tipo = tipo;
+	}
+
+	public String getDestino() {
         return this.destino;
     }
 
@@ -30,13 +33,7 @@ public abstract class Mensaje {
     public String getTipo() {
         return this.tipo;
     }
-
-    public String helpText() {
-        return "ayuda: " + help + "\n";
-    }
-
-    protected boolean matchMensajeName(String name) {
-        return this.tipo.equalsIgnoreCase(name);
-    }
+    
+    public abstract boolean execute(Servidor s);
 
 }

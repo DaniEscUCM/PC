@@ -15,7 +15,7 @@ public class Cliente {
     private Usuario whoami;
 
     public Cliente(Usuario me){
-        whoami=me;
+        whoami = me;
     }
 
     public String getId(){
@@ -26,7 +26,7 @@ public class Cliente {
         return whoami.getDireccion_ip();
     }
     
-    public Fichero getFile(String name) {//más de un proceso podría acceder a varios ficheros(?)
+    public Fichero getFile(String name) {//mas de un proceso podr� acceder a varios ficheros(?)
     	return whoami.getFile(name);
     }
 }

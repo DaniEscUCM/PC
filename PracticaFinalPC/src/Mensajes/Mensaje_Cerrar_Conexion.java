@@ -1,30 +1,28 @@
 package Mensajes;
 
+import Servidor.Servidor;
+
 public class Mensaje_Cerrar_Conexion extends Mensaje {
 
-    private String tipo = "Mensaje_Cerrar_Conexion";
-    private String help = "cierra la conexion";
-
+    static private String tipo = "Mensaje_Cerrar_Conexion";
     private String origen;
     private String destino;
 
     public Mensaje_Cerrar_Conexion() {
-        super(tipo, help, origen, destino);
+        super(tipo);
     }
 
     public Mensaje_Cerrar_Conexion(String origen, String destino) {
-        super(tipo, help, origen, destino);
+        super(tipo,origen, destino);
+        this.origen = origen;
+        this.destino= destino;
     }
 
     public boolean execute(Servidor servidor) {
-        servidor.cerrarConexion(origen,destino);
+        servidor.cerrarConexion(this.origen,this.destino);
         return false;
     }
+    
 
-    public Command parse(String[] commandWords) {
-        if (matchMensajeName(commandWords[0]))
-            return new Mensaje_Cerrar_Conexion();
-        return null;
-    }
 
 }

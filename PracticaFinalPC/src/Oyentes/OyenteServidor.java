@@ -7,7 +7,7 @@ import java.net.Socket;
 import Cliente.Cliente;
 
 /**
- * implementa el interfaz “Runnable” o hereda de la clase “Thread”, y seria
+ * implementa el interfaz Runnable o  hereda de la clase Thread seria
  * usada para llevar a cabo una escucha continua en el canal de comunicacion con
  * el servidor, en un hilo diferente
  */
