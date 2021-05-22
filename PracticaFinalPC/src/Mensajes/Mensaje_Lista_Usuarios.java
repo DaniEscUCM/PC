@@ -1,12 +1,9 @@
 package Mensajes;
 
-import Servidor.Servidor;
-
 public class Mensaje_Lista_Usuarios extends Mensaje {
 
-    static private String tipo = "Mensaje_Lista_Usuarios";
-    private String origen;
-    private String destino;
+	private static final long serialVersionUID = 8967104155744953826L;
+	static private String tipo = "Mensaje_Lista_Usuarios";
 
     public Mensaje_Lista_Usuarios() {
         super(tipo);
@@ -14,8 +11,6 @@ public class Mensaje_Lista_Usuarios extends Mensaje {
 
     public Mensaje_Lista_Usuarios(String origen, String destino) {
         super(tipo, origen, destino);
-        this.origen = origen;
-        this.destino = destino;
     }
 
 }

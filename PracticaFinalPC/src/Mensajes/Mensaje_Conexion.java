@@ -4,7 +4,8 @@ import java.util.*;
 
 public class Mensaje_Conexion extends Mensaje {
 
-    static private String tipo = "Mensaje_Conexion";
+	private static final long serialVersionUID = -2966443059131992737L;
+	static private String tipo = "Mensaje_Conexion";
     private String id_cliente;
     private String ip_cliente;
     private ArrayList<String> shared_info;
@@ -12,9 +13,6 @@ public class Mensaje_Conexion extends Mensaje {
     public Mensaje_Conexion() {
         super(tipo);
     }
-
-    // fout.writeObject(new
-    // Mensaje_Conexion(client.getId(),"server",client.getId(),client.getId(),client.getShared_info());
 
     public Mensaje_Conexion(String origen, String destino, String id_cliente, String ip_cliente,
             ArrayList<String> shared_info) {

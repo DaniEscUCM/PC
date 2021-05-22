@@ -7,7 +7,8 @@ import java.io.Serializable;
    * atributos al tipo, origen y destino del mensaje en cuestion;
    */
 public abstract class Mensaje implements Serializable {
-    private String tipo;
+	private static final long serialVersionUID = -9190527409302867699L;
+	private String tipo;
     private String origen;
     private String destino;
 

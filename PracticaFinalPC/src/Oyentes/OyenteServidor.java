@@ -2,10 +2,9 @@ package Oyentes;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
-import Mensajes.Mensaje;
-import Mensajes.Mensaje_Conexion;
+
 import Cliente.Cliente;
+import Mensajes.Mensaje;
 
 /**
  * implementa el interfaz Runnable o hereda de la clase Thread seria usada para
@@ -25,9 +24,10 @@ public class OyenteServidor extends Thread {
     }
 
     @Override
-    public void start() {
+    public void run() {
         try {
-            while (true) {
+        	boolean go=true;
+            while (go) {
                 Mensaje mensaje = (Mensaje) fin.readObject();// se queda oyendo esperando por mensaje del servidor
                 
                 switch (mensaje.getTipo()) {
@@ -37,13 +37,26 @@ public class OyenteServidor extends Thread {
                     }
                     case "mensaje_error_usuario_existente": {
                         System.out.println("Este usuario ya existía");
+                        break;
+                    }
+                    case "Mensaje_Confirmar_Desconecion":{
+                    	go=false;
+                    	System.out.println("Desconectado del Servidor");
+                    	break;
+                    }
+                    case "Mensaje_Error_Desconecion":{
+                    	System.out.println("Error al desconectar, usuario ya se había eliminado?");
+                    	break;
                     }
                     default: {
                         System.err.println("DANGER unknown message");
+                        break;
 
                     }
                 }
             }
+            fin.close();
+            fout.close();
         } catch (Exception e) {
             System.err.println(e + " " + client.getId());
         }

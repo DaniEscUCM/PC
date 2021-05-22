@@ -1,7 +1,6 @@
 
 package Cliente;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -11,6 +10,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import Mensajes.Fichero;
+import Mensajes.Mensaje_Cerrar_Conexion;
 import Mensajes.Mensaje_Conexion;
 import Oyentes.OyenteServidor;
 
@@ -32,10 +32,9 @@ para la interacci´on con el usuario del sistema.
 
 public class MainCliente {
 
-	// se supone que deben haber dos ficheros de texto aqui , no se si mas ,es la
-	// informacion???khe
-
-	public static void main(String[] args) {
+	private static String help="exit - salir y cortar todas las conexiones";//+System.lineSeparator())
+	
+	public static void main(String[] args){
 		Scanner in = new Scanner(System.in);
 		System.out.println("Bienvenido Usuario");
 		Usuario user;
@@ -71,36 +70,47 @@ public class MainCliente {
 			ObjectOutputStream fout = new ObjectOutputStream(s.getOutputStream());
 			ObjectInputStream fin = new ObjectInputStream(s.getInputStream());
 			
+			OyenteServidor o=new OyenteServidor(client, fin, fout);
+			o.start();
+			
 			System.out.println("mandando mensaje de conexion");
 			
 			
 			fout.writeObject(new Mensaje_Conexion(client.getId(), "server", client.getId(), client.getIP(),
 					client.getShared_info()));
 			
-			OyenteServidor o=new OyenteServidor(client, fin, fout);
-			o.start();
+			
+		
+			while (go) {
+				System.out.println("Introduzca una acción(help para ayuda):");
+				String[] words = in.nextLine().toLowerCase().trim().split("\\s+");// espera por una instruccion
+	
+				switch (words[0]) {
+					case "exit": {
+						System.out.println("Cerrando todas las conexiones");
+						fout.writeObject(new Mensaje_Cerrar_Conexion(client.getId(), "server"));
+						//TODO cerrar conexiones con los otros clientes si es que hay
+						go = false;
+						break;
+					}
+					case "help":{
+						System.out.println(help);
+						break;
+					}
+					default: {
+						System.out.println("ERROR: COMMAND NOT RECONNIZED");
+						break;
+					}
+				}
+				
+			}
+			in.close();
 		}
 		catch(Exception e) {
 			System.err.println(e);
 		}
-		while (go) {
-			String[] words = in.nextLine().toLowerCase().trim().split("\\s+");// espera por una instruccion
 
-			switch (words[0]) {
-				case "exit": {
-					System.out.println("Cerrando todas las conexiones");
-					// se cierran todas las conexiones
-					go = false;
-					break;
-				}
-				default: {
-					System.out.println("ERROR: COMMAND NOT RECONNIZED");
-					break;
-				}
-			}
-			in.close();
-
-		}
+		
 		/*
 		 * 
 		 * InputStream() Fichero f = (Fichero) objectInput.readObject();->esto sería
@@ -118,6 +128,6 @@ public class MainCliente {
 		 * lista usuarios: enviar MENSAJE_LISTA_USUARIOS -pedir fichero enviar
 		 * MENSAJE_PEDIR_FICHERO 3 -salir enviar MENSAJE_CERRAR_CONEXION
 		 */
-
+		
 	}
 }

@@ -1,12 +1,9 @@
 package Mensajes;
 
-import Servidor.Servidor;
-
 public class Mensaje_Cerrar_Conexion extends Mensaje {
 
-    static private String tipo = "Mensaje_Cerrar_Conexion";
-    private String origen;
-    private String destino;
+	private static final long serialVersionUID = -4198693176165787402L;
+	static private String tipo = "Mensaje_Cerrar_Conexion";
 
     public Mensaje_Cerrar_Conexion() {
         super(tipo);
@@ -14,8 +11,6 @@ public class Mensaje_Cerrar_Conexion extends Mensaje {
 
     public Mensaje_Cerrar_Conexion(String origen, String destino) {
         super(tipo, origen, destino);
-        this.origen = origen;
-        this.destino = destino;
     }
 
 }

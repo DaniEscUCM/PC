@@ -1,7 +1,6 @@
 package Servidor;
 
 import java.util.*;
-import Cliente.MainCliente;
 import java.io.*;
 
 /**
@@ -27,43 +26,27 @@ public class Servidor {// Cambiar a escritores y lectores, varios podrían leer 
     // Tabla de cada id con su ip
     private Map<String, String> tabla_ip = new HashMap<String, String>();
 
-    // lista de oyentes con los clientes
+    // TODO lista de oyentes con los clientes, informar cuando se cierre el servidor.
     // oyente[i].mensaje_de_cerrarConexion()
 
-    // private String direccion_ip = "localhost";
-    // private final int PUERTO = 1234;
 
     public Servidor() {
         //loadClients();
     }
 
-    /*
-     * public Servidor(String ip) { direccion_ip = ip; loadClients(); }
-     */
-
-    /*
-     * ObjectOutputStream objectOutput = new
-     * ObjectOutputStream(s.getOutputStream());
-     * 
-     * List<Fichero> listF = new ArrayList<Fichero>();
-     * 
-     * listF.add(new Fichero()); for (Fichero f : listF) {
-     * objectOutput.writeObject(f); objectOutput.flush(); }
-     */
-
-    private synchronized void loadClients() {
+  /*  private synchronized void loadClients() {
         try {
             Scanner filin = new Scanner("users.txt");
-            String[] words = filin.nextLine().toLowerCase().trim().split("\\s+");
-            while (words.length != 0) {
-                MainCliente.main(words);
+            String[] words;
+            while (filin.hasNextLine()) {
                 words = filin.nextLine().toLowerCase().trim().split("\\s+");
+                MainCliente.main(words);
             }
             filin.close();
         } catch (Exception e) {
             System.out.println(e);
         }
-    }
+    }*/
 
     public synchronized boolean addUser(String id, String ip, ArrayList<String> shared, ObjectInputStream in,
             ObjectOutputStream out) {
@@ -90,11 +73,16 @@ public class Servidor {// Cambiar a escritores y lectores, varios podrían leer 
 
     // Metodos para los mensajes
 
-    public synchronized void cerrarConexion(String origen, String destino) {
-        /*
-         * String id = fin.readLine();// pedir leer al cliente server.deleteUser(id);
-         * fout.writeBytes("Conexion Cerrada");
-         */
+    public synchronized boolean cerrarConexion(String origen, String destino) {
+ 
+    	if(!tabla_usuarios.containsKey(origen)) {
+    		return false;
+    	}
+    	tabla_usuarios.remove(origen);
+    	tabla_informacion.remove(origen);
+    	tabla_ip.remove(origen);
+		return true;
+    	
     }
 
     public synchronized void establecerConexion(String origen, String destino) {
