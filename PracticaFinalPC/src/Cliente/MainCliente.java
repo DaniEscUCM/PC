@@ -2,6 +2,8 @@
 package Cliente;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +11,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import Mensajes.Fichero;
+import Mensajes.Mensaje_Conexion;
 import Oyentes.OyenteServidor;
 
 /* Clase principal de la aplicación cliente. Tendria al menos los siguientes
@@ -62,7 +65,13 @@ public class MainCliente {
 		}
 		Cliente client = new Cliente(user);
 		Socket s = new Socket(server_ip, 1234);
-		(new OyenteServidor(client, s)).start();
+		System.out.println("Estableciendo conexi\u00f3n ...");
+		ObjectInputStream fin = new ObjectInputStream(s.getInputStream());
+		ObjectOutputStream fout = new ObjectOutputStream(s.getOutputStream());
+		(new OyenteServidor(client, fin, fout)).start();
+		fout.writeObject(new Mensaje_Conexion(client.getId(), "server", client.getId(), client.getIP(),
+				client.getShared_info()));
+
 		while (go) {
 			String[] words = in.nextLine().toLowerCase().trim().split("\\s+");// espera por una instruccion
 
