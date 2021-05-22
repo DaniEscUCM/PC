@@ -34,7 +34,7 @@ public class Servidor {// Cambiar a escritores y lectores, varios podrían leer 
     // private final int PUERTO = 1234;
 
     public Servidor() {
-        loadClients();
+        //loadClients();
     }
 
     /*

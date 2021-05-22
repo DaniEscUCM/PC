@@ -1,5 +1,6 @@
 package Servidor;
 
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -14,13 +15,21 @@ public class MainServidor {
 
     public static void main(String[] args) {
         Servidor server = new Servidor();
-        Socket s;
+        try {
+        	listen=new ServerSocket(1234);
+        }
+        catch(Exception e) {
+        	System.err.println(e+" error en el puerto");
+        }
+        Socket s;        
+        System.out.println("Listo para escuchar");
         while (true) {
             try {
                 s = listen.accept();
-                (new OyenteCliente(s, server)).start();
+                OyenteCliente o=new OyenteCliente(s, server);
+                o.start();
             } catch (Exception e) {
-
+            	System.err.println(e+" Error con oyente");
             }
 
         }

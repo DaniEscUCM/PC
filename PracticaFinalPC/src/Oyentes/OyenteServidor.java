@@ -18,18 +18,18 @@ public class OyenteServidor extends Thread {
     private ObjectInputStream fin;
     private ObjectOutputStream fout;
 
-    public OyenteServidor(Cliente client, ObjectInputStream fin, private ObjectOutputStream fout) {
+    public OyenteServidor(Cliente client, ObjectInputStream fin, ObjectOutputStream fout) {
         this.client = client;
         this.fin = fin;
         this.fout = fout;
     }
 
     @Override
-    public void run() {
+    public void start() {
         try {
-
             while (true) {
                 Mensaje mensaje = (Mensaje) fin.readObject();// se queda oyendo esperando por mensaje del servidor
+                
                 switch (mensaje.getTipo()) {
                     case "mensaje_confirmacion_conexion": {
                         System.out.println("Conexión confirmada");

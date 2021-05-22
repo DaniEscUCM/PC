@@ -35,7 +35,7 @@ public class MainCliente {
 	// se supone que deben haber dos ficheros de texto aqui , no se si mas ,es la
 	// informacion???khe
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		Scanner in = new Scanner(System.in);
 		System.out.println("Bienvenido Usuario");
 		Usuario user;
@@ -63,15 +63,26 @@ public class MainCliente {
 			words = in.nextLine().toLowerCase().trim().split("\\s+");
 			server_ip = words[0];
 		}
+		System.out.println("USUARIO: "+user.getId_usuario()+" ip: "+user.getDireccion_ip());
 		Cliente client = new Cliente(user);
-		Socket s = new Socket(server_ip, 1234);
-		System.out.println("Estableciendo conexi\u00f3n ...");
-		ObjectInputStream fin = new ObjectInputStream(s.getInputStream());
-		ObjectOutputStream fout = new ObjectOutputStream(s.getOutputStream());
-		(new OyenteServidor(client, fin, fout)).start();
-		fout.writeObject(new Mensaje_Conexion(client.getId(), "server", client.getId(), client.getIP(),
-				client.getShared_info()));
-
+		try {
+			Socket s = new Socket(server_ip, 1234);
+			System.out.println("Estableciendo conexi\u00f3n ...");
+			ObjectOutputStream fout = new ObjectOutputStream(s.getOutputStream());
+			ObjectInputStream fin = new ObjectInputStream(s.getInputStream());
+			
+			System.out.println("mandando mensaje de conexion");
+			
+			
+			fout.writeObject(new Mensaje_Conexion(client.getId(), "server", client.getId(), client.getIP(),
+					client.getShared_info()));
+			
+			OyenteServidor o=new OyenteServidor(client, fin, fout);
+			o.start();
+		}
+		catch(Exception e) {
+			System.err.println(e);
+		}
 		while (go) {
 			String[] words = in.nextLine().toLowerCase().trim().split("\\s+");// espera por una instruccion
 

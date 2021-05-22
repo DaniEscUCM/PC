@@ -35,12 +35,13 @@ public class OyenteCliente extends Thread {
     }
 
     @Override
-    public void run() {
+    public void start() {
         try {
-            fin = new ObjectInputStream(s.getInputStream());// entrada
+        	System.out.println("Conectando con nuevo cliente ...");
             fout = new ObjectOutputStream(s.getOutputStream());// salida
+            fin = new ObjectInputStream(s.getInputStream());// entrada
             while (true) {
-
+            	System.out.println("Listo para trabajar");
                 Mensaje m = (Mensaje) fin.readObject();
                 switch (m.getTipo()) {
                     case "Mensaje_Conexion": {
