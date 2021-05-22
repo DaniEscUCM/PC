@@ -1,6 +1,7 @@
 package Cliente;
 
 import Mensajes.Fichero;
+import java.util.*;
 
 /**
  * 

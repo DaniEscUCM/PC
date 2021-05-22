@@ -1,7 +1,6 @@
 package Mensajes;
 
-import Servidor.Servidor;
-import Cliente.Cliente;
+import java.io.Serializable;
 
 /*
    * Sirve como raız de la jerarquıa de mensajes que debemos dise�ar. Tiene como

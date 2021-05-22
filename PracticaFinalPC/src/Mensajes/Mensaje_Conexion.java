@@ -1,33 +1,38 @@
 package Mensajes;
 
-import Cliente.Cliente;
-import Servidor.Servidor;
+import java.util.*;
 
 public class Mensaje_Conexion extends Mensaje {
 
     static private String tipo = "Mensaje_Conexion";
-    private String origen;
-    private String destino;
+    private String id_cliente;
+    private String ip_cliente;
+    private ArrayList<String> shared_info;
 
     public Mensaje_Conexion() {
         super(tipo);
     }
 
-    public Mensaje_Conexion(String origen, String destino) {
+    // fout.writeObject(new
+    // Mensaje_Conexion(client.getId(),"server",client.getId(),client.getId(),client.getShared_info());
+
+    public Mensaje_Conexion(String origen, String destino, String id_cliente, String ip_cliente,
+            ArrayList<String> shared_info) {
         super(tipo, origen, destino);
-        this.origen = origen;
-        this.destino = destino;
+        this.id_cliente = id_cliente;
+        this.ip_cliente = ip_cliente;
+        this.shared_info = shared_info;
     }
 
-    public boolean execute(Servidor servidor) {
-        servidor.establecerConexion(this.origen, this.destino);
-        return false;
+    public String getId_cliente() {
+        return this.id_cliente;
     }
 
-    @Override
-    public boolean execute(Cliente c) {
-        // TODO Auto-generated method stub
-        return false;
+    public ArrayList<String> getShared_info() {
+        return this.shared_info;
     }
 
+    public String getIp_cliente() {
+        return this.ip_cliente;
+    }
 }
