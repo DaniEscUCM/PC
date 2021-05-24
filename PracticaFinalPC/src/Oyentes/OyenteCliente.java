@@ -72,11 +72,21 @@ public class OyenteCliente extends Thread {
                         break;
                     }
                     case "Mensaje_Lista_Usuarios": {
-                    	ArrayList<String> lista = server.lista_usuarios(m.getOrigen(), m.getDestino());
+                        ArrayList<String> lista = server.lista_usuarios(m.getOrigen(), m.getDestino());
                         fout.writeObject(new Mensaje_Confirmar_Lista_Usuarios("server", m.getOrigen(), lista));
                         break;
                     }
-                    // case ""
+                    case "Mensaje_Pedir_Fichero": {
+                        Mensaje_Pedir_Fichero men = (Mensaje_Pedir_Fichero) m;
+                        ObjectOutputStream fout2 = server.getUsuario_from_file(men.getNombreFichero());
+                        if (fout2 != null) {
+                            fout2.writeObject(
+                                    new Mensaje_Emitir_Fichero(men.getOrigen(), "server", men.getNombreFichero()));
+                        } else {
+                            fout2.writeObject(new Mensaje_Error_Fichero("server", men.getOrigen()));
+                        }
+                        break;
+                    }
 
                     default: {
                         System.err.println("DANGER unknown message");

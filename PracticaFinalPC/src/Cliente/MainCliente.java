@@ -53,7 +53,7 @@ public class MainCliente {
 			}
 			user = new Usuario(user_id, user_ip, names, files);
 		} else {
-			System.out.print("Por favor, introduce nombre de usuario y direcci\u00edn ip: ");
+			System.out.print("Por favor, introduce nombre de usuario y dirección ip: ");
 			String[] words = in.nextLine().toLowerCase().trim().split("\\s+");
 			String nombre_de_usuario = words[0];
 			String ip = words[1];
@@ -88,16 +88,16 @@ public class MainCliente {
 						fout.writeObject(new Mensaje_Cerrar_Conexion(client.getId(), "server"));
 						// TODO cerrar conexiones con los otros clientes si es que hay
 						go = false;
+						mainSemaphore.acquire();
 						break;
 					}
 					case "fichero": {
-						// fichero nombre_del_fichero
 						fout.writeObject(new Mensaje_Pedir_Fichero(client.getId(), "server", words[1]));
 						mainSemaphore.acquire();
 						break;
 					}
-					case "lista_usuarios":{
-						fout.writeObject(new Mensaje_Lista_Usuarios(client.getId(),"server"));
+					case "lista_usuarios": {
+						fout.writeObject(new Mensaje_Lista_Usuarios(client.getId(), "server"));
 						mainSemaphore.acquire();
 						break;
 					}
@@ -113,7 +113,7 @@ public class MainCliente {
 
 			}
 			in.close();
-			//s.close();
+			s.close();
 		} catch (Exception e) {
 			System.err.println(e);
 		}

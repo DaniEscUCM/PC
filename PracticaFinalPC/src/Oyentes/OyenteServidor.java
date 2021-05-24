@@ -50,19 +50,25 @@ public class OyenteServidor extends Thread {
                     case "Mensaje_Confirmar_Desconecion": {
                         go = false;
                         System.out.println("Desconectado del Servidor");
+                        this.s.release();
                         break;
                     }
                     case "Mensaje_Error_Desconecion": {
                         System.out.println("Error al desconectar, usuario ya se había eliminado?");
+                        this.s.release();
                         break;
                     }
                     case "Mensaje_Confirmar_Lista_Usuarios": {
                         Mensaje_Confirmar_Lista_Usuarios s = (Mensaje_Confirmar_Lista_Usuarios) mensaje;
-                        ArrayList<String>  lista_usuarios = s.getLista();
+                        ArrayList<String> lista_usuarios = s.getLista();
                         System.out.println("Lista de usuarios Registrados :");
                         System.out.println(lista_usuarios);
                         this.s.release();
                         break;
+                    }
+                    case "Mensaje_Emitir_Fichero": {
+                        Mensaje_Emitir_Fichero men = (Mensaje_Emitir_Fichero) mensaje;
+
                     }
                     default: {
                         System.err.println("DANGER unknown message");
