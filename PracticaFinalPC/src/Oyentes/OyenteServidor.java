@@ -2,6 +2,7 @@ package Oyentes;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 
@@ -57,8 +58,7 @@ public class OyenteServidor extends Thread {
                     }
                     case "Mensaje_Confirmar_Lista_Usuarios": {
                         Mensaje_Confirmar_Lista_Usuarios s = (Mensaje_Confirmar_Lista_Usuarios) mensaje;
-
-                        Set<String> lista_usuarios = s.getLista();
+                        ArrayList<String>  lista_usuarios = s.getLista();
                         System.out.println("Lista de usuarios Registrados :");
                         System.out.println(lista_usuarios);
                         this.s.release();

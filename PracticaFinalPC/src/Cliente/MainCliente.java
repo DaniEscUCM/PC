@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.Semaphore;
 
 import Mensajes.*;
 import Oyentes.OyenteServidor;
@@ -93,6 +94,12 @@ public class MainCliente {
 						// fichero nombre_del_fichero
 						fout.writeObject(new Mensaje_Pedir_Fichero(client.getId(), "server", words[1]));
 						mainSemaphore.acquire();
+						break;
+					}
+					case "lista_usuarios":{
+						fout.writeObject(new Mensaje_Lista_Usuarios(client.getId(),"server"));
+						mainSemaphore.acquire();
+						break;
 					}
 					case "help": {
 						System.out.println(help);
@@ -106,7 +113,7 @@ public class MainCliente {
 
 			}
 			in.close();
-			s.close();
+			//s.close();
 		} catch (Exception e) {
 			System.err.println(e);
 		}

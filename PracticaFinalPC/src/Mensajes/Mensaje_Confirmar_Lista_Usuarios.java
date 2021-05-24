@@ -1,14 +1,14 @@
 package Mensajes;
 
-import java.util.Set;
+import java.util.ArrayList;
 
 public class Mensaje_Confirmar_Lista_Usuarios extends Mensaje {
 
     private static final long serialVersionUID = 6493460124103789630L;
     private static String tipo = "Mensaje_Confirmar_Lista_Usuarios";
-    Set<String> lista;
+    ArrayList<String> lista;
 
-    public Mensaje_Confirmar_Lista_Usuarios(String origen, String destino, Set<String> lista) {
+    public Mensaje_Confirmar_Lista_Usuarios(String origen, String destino, ArrayList<String>  lista) {
         super(tipo, origen, destino);
         this.lista = lista;
     }
@@ -17,7 +17,7 @@ public class Mensaje_Confirmar_Lista_Usuarios extends Mensaje {
         super(tipo);
     }
 
-    public Set<String> getLista() {
+    public ArrayList<String>  getLista() {
         return this.lista;
     }
 

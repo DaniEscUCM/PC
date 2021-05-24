@@ -5,6 +5,7 @@ import Servidor.Servidor;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -71,7 +72,7 @@ public class OyenteCliente extends Thread {
                         break;
                     }
                     case "Mensaje_Lista_Usuarios": {
-                        Set<String> lista = server.lista_usuarios(m.getOrigen(), m.getDestino());
+                    	ArrayList<String> lista = server.lista_usuarios(m.getOrigen(), m.getDestino());
                         fout.writeObject(new Mensaje_Confirmar_Lista_Usuarios("server", m.getOrigen(), lista));
                         break;
                     }

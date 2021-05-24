@@ -88,10 +88,14 @@ public class Servidor {// Cambiar a escritores y lectores, varios podrían leer 
         // se pasa un mensaje de confirmacion fout
     }
 
-    public synchronized Set<String> lista_usuarios(String origen, String destino) {
+    public synchronized ArrayList<String> lista_usuarios(String origen, String destino) {
 
         if (!tabla_usuarios.isEmpty()) {
-            return this.tabla_usuarios.keySet();
+        	ArrayList<String> lista = new ArrayList<String>();
+        	for (String s : tabla_usuarios.keySet()) {
+				lista.add(s);
+			}
+            return lista;
         }
         return null;
     }
