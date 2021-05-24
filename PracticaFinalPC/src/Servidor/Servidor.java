@@ -18,7 +18,8 @@ public class Servidor {// Cambiar a escritores y lectores, varios podrían leer 
 
     // tabla de usuarios,con flujo de entrada[0] y flujo de salida[1] --> no sería
     // mejor solo IPs??
-    private Map<String, Object[]> tabla_usuarios = new HashMap<String, Object[]>();// String Id_usuario
+    private Map<String, Object[]> tabla_usuarios = new HashMap<String, Object[]>();
+    // String Id_usuario , array con sus conexiones
 
     // tabla de informacion son los ficheros que se quieren compartir con los demas
     private Map<String, ArrayList<String>> tabla_informacion = new HashMap<String, ArrayList<String>>();
@@ -26,27 +27,20 @@ public class Servidor {// Cambiar a escritores y lectores, varios podrían leer 
     // Tabla de cada id con su ip
     private Map<String, String> tabla_ip = new HashMap<String, String>();
 
-    // TODO lista de oyentes con los clientes, informar cuando se cierre el servidor.
+    // TODO lista de oyentes con los clientes, informar cuando se cierre el
+    // servidor.
     // oyente[i].mensaje_de_cerrarConexion()
 
-
     public Servidor() {
-        //loadClients();
+        // loadClients();
     }
 
-  /*  private synchronized void loadClients() {
-        try {
-            Scanner filin = new Scanner("users.txt");
-            String[] words;
-            while (filin.hasNextLine()) {
-                words = filin.nextLine().toLowerCase().trim().split("\\s+");
-                MainCliente.main(words);
-            }
-            filin.close();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }*/
+    /*
+     * private synchronized void loadClients() { try { Scanner filin = new
+     * Scanner("users.txt"); String[] words; while (filin.hasNextLine()) { words =
+     * filin.nextLine().toLowerCase().trim().split("\\s+"); MainCliente.main(words);
+     * } filin.close(); } catch (Exception e) { System.out.println(e); } }
+     */
 
     public synchronized boolean addUser(String id, String ip, ArrayList<String> shared, ObjectInputStream in,
             ObjectOutputStream out) {
@@ -74,15 +68,15 @@ public class Servidor {// Cambiar a escritores y lectores, varios podrían leer 
     // Metodos para los mensajes
 
     public synchronized boolean cerrarConexion(String origen, String destino) {
- 
-    	if(!tabla_usuarios.containsKey(origen)) {
-    		return false;
-    	}
-    	tabla_usuarios.remove(origen);
-    	tabla_informacion.remove(origen);
-    	tabla_ip.remove(origen);
-		return true;
-    	
+
+        if (!tabla_usuarios.containsKey(origen)) {
+            return false;
+        }
+        tabla_usuarios.remove(origen);
+        tabla_informacion.remove(origen);
+        tabla_ip.remove(origen);
+        return true;
+
     }
 
     public synchronized void establecerConexion(String origen, String destino) {
@@ -94,13 +88,12 @@ public class Servidor {// Cambiar a escritores y lectores, varios podrían leer 
         // se pasa un mensaje de confirmacion fout
     }
 
-    public synchronized void lista_usuarios(String origen, String destino) {
-        // TODO Auto-generated method stub
-        /*
-         * claro qe va a hacer falta mas info , lo vamos cambiando , vamos a hacer
-         * establecer conexion a ver si va exacto
-         */
+    public synchronized Set<String> lista_usuarios(String origen, String destino) {
 
+        if (!tabla_usuarios.isEmpty()) {
+            return this.tabla_usuarios.keySet();
+        }
+        return null;
     }
 
     public synchronized void pedir_fichero(String origen, String destino) {

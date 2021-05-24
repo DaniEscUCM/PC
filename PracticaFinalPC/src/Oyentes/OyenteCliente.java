@@ -5,6 +5,7 @@ import Servidor.Servidor;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Set;
 
 /**
  * Implementa el interfaz Runnable y hereda de la clase Thread, y es usada para
@@ -37,19 +38,19 @@ public class OyenteCliente extends Thread {
     @Override
     public void run() {
         try {
-        	boolean go=true;
-        	System.out.println("Conectando con nuevo cliente ...");
+            boolean go = true;
+            System.out.println("Conectando con nuevo cliente ...");
             fout = new ObjectOutputStream(s.getOutputStream());// salida
             fin = new ObjectInputStream(s.getInputStream());// entrada
             while (go) {
-            	System.out.println("Listo para trabajar");
+                System.out.println("Listo para trabajar");
                 Mensaje m = (Mensaje) fin.readObject();
                 switch (m.getTipo()) {
                     case "Mensaje_Conexion": {
 
                         Mensaje_Conexion men = (Mensaje_Conexion) m;
                         if (server.addUser(men.getOrigen(), men.getIp_cliente(), men.getShared_info(), fin, fout)) {
-                            System.out.println(GoodMsg+men.getOrigen());
+                            System.out.println(GoodMsg + men.getOrigen());
                             fout.writeObject(new Mensaje_Confirmacion_conexion("server", men.getDestino()));
                         } else {
                             System.out.println(ErrMsg);
@@ -58,24 +59,30 @@ public class OyenteCliente extends Thread {
 
                         break;
                     }
-                    case "Mensaje_Cerrar_Conexion":{
-                    	if(server.cerrarConexion(m.getOrigen(), m.getDestino())){
-                    		go=false;
-                    		System.out.println("El cliente: "+m.getOrigen()+" se ha desconectado");
-                    		fout.writeObject(new Mensaje_Confirmar_Desconecion("server",m.getOrigen()));
-                    	}
-                    	else {
-                    		System.out.println("El cliente: "+m.getOrigen()+" no se ha desconectado");
-                    		fout.writeObject(new Mensaje_Error_Desconecion("server",m.getOrigen()));
-                    	}
-                    	break;
+                    case "Mensaje_Cerrar_Conexion": {
+                        if (server.cerrarConexion(m.getOrigen(), m.getDestino())) {
+                            go = false;
+                            System.out.println("El cliente: " + m.getOrigen() + " se ha desconectado");
+                            fout.writeObject(new Mensaje_Confirmar_Desconecion("server", m.getOrigen()));
+                        } else {
+                            System.out.println("El cliente: " + m.getOrigen() + " no se ha desconectado");
+                            fout.writeObject(new Mensaje_Error_Desconecion("server", m.getOrigen()));
+                        }
+                        break;
                     }
+                    case "Mensaje_Lista_Usuarios": {
+                        Set<String> lista = server.lista_usuarios(m.getOrigen(), m.getDestino());
+                        fout.writeObject(new Mensaje_Confirmar_Lista_Usuarios("server", m.getOrigen(), lista));
+                        break;
+                    }
+                    // case ""
+
                     default: {
                         System.err.println("DANGER unknown message");
                         break;
                     }
                 }
-                
+
             }
             fin.close();
             fout.close();

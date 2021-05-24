@@ -9,9 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import Mensajes.Fichero;
-import Mensajes.Mensaje_Cerrar_Conexion;
-import Mensajes.Mensaje_Conexion;
+import Mensajes.*;
 import Oyentes.OyenteServidor;
 
 /* Clase principal de la aplicación cliente. Tendria al menos los siguientes
@@ -32,14 +30,15 @@ para la interacci´on con el usuario del sistema.
 
 public class MainCliente {
 
-	private static String help="exit - salir y cortar todas las conexiones";//+System.lineSeparator())
-	
-	public static void main(String[] args){
+	private static String help = "exit - salir y cortar todas las conexiones";// +System.lineSeparator())
+
+	public static void main(String[] args) {
 		Scanner in = new Scanner(System.in);
 		System.out.println("Bienvenido Usuario");
 		Usuario user;
 		Boolean go = true;
 		String server_ip = "localhost";
+		Semaphore mainSemaphore = new Semaphore(0);
 
 		if (args.length > 0) {
 			String user_id = args[0];
@@ -62,38 +61,40 @@ public class MainCliente {
 			words = in.nextLine().toLowerCase().trim().split("\\s+");
 			server_ip = words[0];
 		}
-		System.out.println("USUARIO: "+user.getId_usuario()+" ip: "+user.getDireccion_ip());
+		System.out.println("USUARIO: " + user.getId_usuario() + " ip: " + user.getDireccion_ip());
 		Cliente client = new Cliente(user);
 		try {
 			Socket s = new Socket(server_ip, 1234);
 			System.out.println("Estableciendo conexi\u00f3n ...");
 			ObjectOutputStream fout = new ObjectOutputStream(s.getOutputStream());
 			ObjectInputStream fin = new ObjectInputStream(s.getInputStream());
-			
-			OyenteServidor o=new OyenteServidor(client, fin, fout);
+
+			OyenteServidor o = new OyenteServidor(client, fin, fout, mainSemaphore);
 			o.start();
-			
+
 			System.out.println("mandando mensaje de conexion");
-			
-			
+
 			fout.writeObject(new Mensaje_Conexion(client.getId(), "server", client.getId(), client.getIP(),
 					client.getShared_info()));
-			
-			
-		
+			mainSemaphore.acquire();
 			while (go) {
 				System.out.println("Introduzca una acción(help para ayuda):");
 				String[] words = in.nextLine().toLowerCase().trim().split("\\s+");// espera por una instruccion
-	
+
 				switch (words[0]) {
 					case "exit": {
 						System.out.println("Cerrando todas las conexiones");
 						fout.writeObject(new Mensaje_Cerrar_Conexion(client.getId(), "server"));
-						//TODO cerrar conexiones con los otros clientes si es que hay
+						// TODO cerrar conexiones con los otros clientes si es que hay
 						go = false;
 						break;
 					}
-					case "help":{
+					case "fichero": {
+						// fichero nombre_del_fichero
+						fout.writeObject(new Mensaje_Pedir_Fichero(client.getId(), "server", words[1]));
+						mainSemaphore.acquire();
+					}
+					case "help": {
 						System.out.println(help);
 						break;
 					}
@@ -102,15 +103,14 @@ public class MainCliente {
 						break;
 					}
 				}
-				
+
 			}
 			in.close();
-		}
-		catch(Exception e) {
+			s.close();
+		} catch (Exception e) {
 			System.err.println(e);
 		}
 
-		
 		/*
 		 * 
 		 * InputStream() Fichero f = (Fichero) objectInput.readObject();->esto sería
@@ -128,6 +128,6 @@ public class MainCliente {
 		 * lista usuarios: enviar MENSAJE_LISTA_USUARIOS -pedir fichero enviar
 		 * MENSAJE_PEDIR_FICHERO 3 -salir enviar MENSAJE_CERRAR_CONEXION
 		 */
-		
+
 	}
 }
