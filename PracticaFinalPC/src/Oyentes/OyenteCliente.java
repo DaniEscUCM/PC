@@ -78,15 +78,19 @@ public class OyenteCliente extends Thread {
                     }
                     case "Mensaje_Pedir_Fichero": {
                         Mensaje_Pedir_Fichero men = (Mensaje_Pedir_Fichero) m;
-                        ObjectOutputStream fout2 = server.getUsuario_from_file(men.getNombreFichero());
+                        String owner = server.getUsuario_from_file(men.getNombreFichero());
+                        ObjectOutputStream fout2 = server.getFlujo_from_user(owner);
+
+                        // mandar un mensaje pedir fichero
                         if (fout2 != null) {
-                            fout2.writeObject(
-                                    new Mensaje_Emitir_Fichero(men.getOrigen(), "server", men.getNombreFichero()));
+                            fout2.writeObject(new Mensaje_Emitir_Fichero("server", owner, men.getNombreFichero(),
+                                    men.getOrigen()));
                         } else {
-                            fout2.writeObject(new Mensaje_Error_Fichero("server", men.getOrigen()));
+                            fout.writeObject(new Mensaje_Error_Fichero("server", men.getOrigen()));
                         }
                         break;
                     }
+                    case "Mensaje_Preparado_ClienteServidor":
 
                     default: {
                         System.err.println("DANGER unknown message");

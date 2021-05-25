@@ -3,12 +3,10 @@ package Oyentes;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.concurrent.Semaphore;
 
 import Cliente.Cliente;
-import Mensajes.Mensaje;
-import Mensajes.Mensaje_Confirmar_Lista_Usuarios;
+import Mensajes.*;
 
 /**
  * implementa el interfaz Runnable o hereda de la clase Thread seria usada para
@@ -69,6 +67,19 @@ public class OyenteServidor extends Thread {
                     case "Mensaje_Emitir_Fichero": {
                         Mensaje_Emitir_Fichero men = (Mensaje_Emitir_Fichero) mensaje;
 
+                        String puerto;
+                        Lock l = new Lock();
+
+                        (new Emisor(puerto, client.getFile(men.getNombreFichero()), client.getId()),l).start();
+                        // ServerSocket listen = new ServerSocket();
+                        fout.writeObject(new Mensaje_Preparado_ClienteServidor(client.getId(), "server", client.getIP(),
+                                puerto, l));
+                        break;
+                    }
+                    case "Mensaje_Preparado_ServidorCliente":{
+                        Mensaje_Preparado_ServidorCliente men=(Mensaje_Preparado_ServidorCliente) mensaje;
+                        (new Receptor(men.getPuerto, client.getId(), men.getIp,men.getCerrojo(),s)).start();
+                        break;
                     }
                     default: {
                         System.err.println("DANGER unknown message");

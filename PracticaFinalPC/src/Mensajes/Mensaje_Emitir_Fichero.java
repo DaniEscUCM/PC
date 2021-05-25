@@ -5,12 +5,8 @@ public class Mensaje_Emitir_Fichero extends Mensaje {
     static private String tipo = "Mensaje_Emitir_Fichero";
     private String nombre_fichero;
 
-    public Mensaje_Emitir_Fichero() {
-        super(tipo);
-    }
-
-    public Mensaje_Emitir_Fichero(String origen, String destino, String nombre_fichero) {
-        super(tipo, origen, destino);
+    public Mensaje_Emitir_Fichero(String origen, String owner, String nombre_fichero, String emisor) {
+        super(tipo, origen, owner);
         this.nombre_fichero = nombre_fichero;
     }
 

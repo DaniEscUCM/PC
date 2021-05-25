@@ -164,8 +164,7 @@ public class Servidor {
 
     }
 
-    public ObjectOutputStream getUsuario_from_file(String nombreFichero) {
-
+    public String getUsuario_from_file(String nombreFichero) {
         l.lock();
         while (nw > 0 || waitw > 0) {
             try {
@@ -176,7 +175,6 @@ public class Servidor {
         }
         nr++;
         l.unlock();
-
         String user2 = "none";
         for (String user : users_names) {
             if (tabla_informacion.get(user).contains(nombreFichero)) {
@@ -184,19 +182,35 @@ public class Servidor {
                 break;
             }
         }
-        ObjectOutputStream fout2 = null;
-
-        if (user2 != "none") {
-            fout2 = (ObjectOutputStream) tabla_usuarios.get(user2)[1];
-        }
-
         l.lock();
         nr--;
         if (nr == 0 && waitw > 0)
             oktowrite.signal();
         l.unlock();
+        return user2;
+    }
 
-        return fout2;
+    public ObjectOutputStream getFlujo_from_user(String user) {
+        l.lock();
+        while (nw > 0 || waitw > 0) {
+            try {
+                oktoread.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        nr++;
+        l.unlock();
+        ObjectOutputStream fout = null;
+        if (user != "none") {
+            fout = (ObjectOutputStream) tabla_usuarios.get(user)[1];
+        }
+        l.lock();
+        nr--;
+        if (nr == 0 && waitw > 0)
+            oktowrite.signal();
+        l.unlock();
+        return fout;
     }
 
 }
