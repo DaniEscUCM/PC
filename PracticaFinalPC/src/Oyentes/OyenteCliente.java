@@ -6,7 +6,7 @@ import Servidor.Servidor;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Set;
+import Cliente.LockBakery;
 
 /**
  * Implementa el interfaz Runnable y hereda de la clase Thread, y es usada para
@@ -48,7 +48,6 @@ public class OyenteCliente extends Thread {
                 Mensaje m = (Mensaje) fin.readObject();
                 switch (m.getTipo()) {
                     case "Mensaje_Conexion": {
-
                         Mensaje_Conexion men = (Mensaje_Conexion) m;
                         if (server.addUser(men.getOrigen(), men.getIp_cliente(), men.getShared_info(), fin, fout)) {
                             System.out.println(GoodMsg + men.getOrigen());
@@ -57,7 +56,6 @@ public class OyenteCliente extends Thread {
                             System.out.println(ErrMsg);
                             fout.writeObject(new Mensaje_error_usuario_existente("server", men.getDestino()));
                         }
-
                         break;
                     }
                     case "Mensaje_Cerrar_Conexion": {
@@ -90,7 +88,13 @@ public class OyenteCliente extends Thread {
                         }
                         break;
                     }
-                    case "Mensaje_Preparado_ClienteServidor":
+                    case "Mensaje_Preparado_ClienteServidor": {
+                        Mensaje_Preparado_ClienteServidor men = (Mensaje_Preparado_ClienteServidor) m;
+
+                        server.mandarMensaje(new Mensaje_Preparado_ServidorCliente("server", men.getDestinoFinal(),
+                                men.getIP(), men.getPuerto(), men.getDestinoFinal(), men.getCerrojo()));
+
+                    }
 
                     default: {
                         System.err.println("DANGER unknown message");

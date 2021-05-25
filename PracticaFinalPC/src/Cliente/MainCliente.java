@@ -36,7 +36,7 @@ public class MainCliente {
 	public static void main(String[] args) {
 		Scanner in = new Scanner(System.in);
 		System.out.println("Bienvenido Usuario");
-		Usuario user;
+		Cliente user;
 		Boolean go = true;
 		String server_ip = "localhost";
 		Semaphore mainSemaphore = new Semaphore(0);
@@ -51,32 +51,33 @@ public class MainCliente {
 				files.put(x.getName(), x);
 				names.add(x.getName());
 			}
-			user = new Usuario(user_id, user_ip, names, files);
+			user = new Cliente(user_id, user_ip, names, files);
 		} else {
 			System.out.print("Por favor, introduce nombre de usuario y dirección ip: ");
 			String[] words = in.nextLine().toLowerCase().trim().split("\\s+");
 			String nombre_de_usuario = words[0];
 			String ip = words[1];
-			user = new Usuario(nombre_de_usuario, ip);
+			user = new Cliente(nombre_de_usuario, ip);
 			System.out.print("Introduzca IP de servidor: ");
 			words = in.nextLine().toLowerCase().trim().split("\\s+");
 			server_ip = words[0];
 		}
-		System.out.println("USUARIO: " + user.getId_usuario() + " ip: " + user.getDireccion_ip());
-		Cliente client = new Cliente(user);
+
+		System.out.println("USUARIO: " + user.getId() + " ip: " + user.getIp());
+
 		try {
 			Socket s = new Socket(server_ip, 1234);
 			System.out.println("Estableciendo conexi\u00f3n ...");
 			ObjectOutputStream fout = new ObjectOutputStream(s.getOutputStream());
 			ObjectInputStream fin = new ObjectInputStream(s.getInputStream());
 
-			OyenteServidor o = new OyenteServidor(client, fin, fout, mainSemaphore);
+			OyenteServidor o = new OyenteServidor(user, fin, fout, mainSemaphore);
 			o.start();
 
 			System.out.println("mandando mensaje de conexion");
 
-			fout.writeObject(new Mensaje_Conexion(client.getId(), "server", client.getId(), client.getIP(),
-					client.getShared_info()));
+			fout.writeObject(
+					new Mensaje_Conexion(user.getId(), "server", user.getId(), user.getIp(), user.getShared_info()));
 			mainSemaphore.acquire();
 			while (go) {
 				System.out.println("Introduzca una acción(help para ayuda):");
@@ -85,24 +86,30 @@ public class MainCliente {
 				switch (words[0]) {
 					case "exit": {
 						System.out.println("Cerrando todas las conexiones");
-						fout.writeObject(new Mensaje_Cerrar_Conexion(client.getId(), "server"));
-						// TODO cerrar conexiones con los otros clientes si es que hay
+						fout.writeObject(new Mensaje_Cerrar_Conexion(user.getId(), "server"));
+						// TODO cerrar conexiones con los otros useres si es que hay
 						go = false;
 						mainSemaphore.acquire();
 						break;
 					}
 					case "fichero": {
-						fout.writeObject(new Mensaje_Pedir_Fichero(client.getId(), "server", words[1]));
+						fout.writeObject(new Mensaje_Pedir_Fichero(user.getId(), "server", words[1]));
 						mainSemaphore.acquire();
 						break;
 					}
 					case "lista_usuarios": {
-						fout.writeObject(new Mensaje_Lista_Usuarios(client.getId(), "server"));
+						fout.writeObject(new Mensaje_Lista_Usuarios(user.getId(), "server"));
 						mainSemaphore.acquire();
 						break;
 					}
 					case "help": {
 						System.out.println(help);
+						break;
+					}
+					case "cargar": {
+						Fichero f = new Fichero(words[1]);
+						user.addShared_info(f);
+						System.out.println("FICHERO AGREGADO");
 						break;
 					}
 					default: {

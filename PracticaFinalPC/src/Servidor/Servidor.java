@@ -6,6 +6,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import Mensajes.Mensaje_Preparado_ServidorCliente;
+
 /**
  * @author Daniela Escobar y Alessandro de Armas
  * 
@@ -160,7 +162,6 @@ public class Servidor {
     }
 
     public void preparado_ciliente_servidor(String origen, String destino) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -211,6 +212,27 @@ public class Servidor {
             oktowrite.signal();
         l.unlock();
         return fout;
+    }
+
+    public void mandarMensaje(Mensaje_Preparado_ServidorClinete mensaje, String destinoFinal) {
+        l.lock();
+        while (nw > 0 || waitw > 0) {
+            try {
+                oktoread.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        nr++;
+        l.unlock();
+
+        tabla_usuarios.get(destinoFinal)[1].writeObject(mensaje);
+
+        l.lock();
+        nr--;
+        if (nr == 0 && waitw > 0)
+            oktowrite.signal();
+        l.unlock();
     }
 
 }

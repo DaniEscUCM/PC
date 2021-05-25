@@ -3,6 +3,9 @@ package Oyentes;
 import Mensajes.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+
+import Cliente.LockBakery;
+
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
@@ -11,9 +14,9 @@ class Emisor extends Thread {
     private int puerto;
     private Fichero f;
     private String clienteID;
-    private Lock cerrojo;
+    private LockBakery cerrojo;
 
-    public Emisor(int puerto, Fichero f, String id, Lock cerrojo) {// recibir lock
+    public Emisor(int puerto, Fichero f, String id, LockBakery cerrojo) {// recibir lock
         this.puerto = puerto;
         this.f = f;
         this.clienteID = id;
@@ -29,9 +32,7 @@ class Emisor extends Thread {
             ObjectInputStream fin = new ObjectInputStream(s.getInputStream());
 
             fout.writeObject(f);
-
-            // lock -> unlock
-            cerrojo.lock();
+            cerrojo.takeLock(0);
             s.close();
             listen.close();
         } catch (Exception e) {

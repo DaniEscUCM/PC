@@ -4,7 +4,6 @@ import Mensajes.Fichero;
 import java.util.*;
 
 /**
- * 
  * @author Daniela Escobar & Alessandro de Armas
  * 
  *         Clase cliente que guarda al usuario, sus conexiones y realiza las
@@ -12,35 +11,55 @@ import java.util.*;
  *         y su usuario. Similar a la clase Servidor.
  */
 public class Cliente {
-    // deberiamos guardar por aqui las conexiones->oyentes
-    // oyente con el servidor
-    // map id, oyente -> con los demás clientes
-    // oyente.mandar_mensaje_y_ALSERVIDOR();
-    // oyente[i].mandar_mensaje_x(id cliente);
 
-    private Usuario whoami;
+    private String direccion_ip;
+    private String id_usuario;
 
-    public Cliente(Usuario me) {
-        whoami = me;
+    ArrayList<String> shared_info = new ArrayList<String>();
+    Map<String, Fichero> info = new HashMap<String, Fichero>();
+
+    private int puerto = 6543;
+
+    public Cliente(String id_usuario, String direccion_ip, ArrayList<String> lis, Map<String, Fichero> m) {
+        this.id_usuario = id_usuario;
+        this.direccion_ip = direccion_ip;
+        this.shared_info = lis;
+        this.info = m;
     }
 
-    public String getId() {
-        return whoami.getId_usuario();
-    }
-
-    public String getIP() {
-        return whoami.getDireccion_ip();
-    }
-
-    public Fichero getFile(String name) {// mas de un proceso podr� acceder a varios ficheros(?)
-        return whoami.getFile(name);
-    }
-
-    public ArrayList<String> getShared_info() {
-        return whoami.getShared_info();
+    public Cliente(String id_usuario, String direccion_ip) {
+        this.id_usuario = id_usuario;
+        this.direccion_ip = direccion_ip;
     }
 
     public void mensajeConexionServidor() {
-        System.out.println("Conexi\u00f3n establecida con el servidor");
+        System.out.println("Conexion establecida con el servidor");
+    }
+
+    public String getIp() {// proteger para leer
+        return direccion_ip;
+    }
+
+    public String getId() {
+        return id_usuario;
+    }
+
+    public ArrayList<String> getShared_info() {
+        return shared_info;
+    }
+
+    public void addShared_info(Fichero f) {// proteger
+        shared_info.add(f.getName());
+        info.put(f.getName(), f);
+    }
+
+    public Fichero getFile(String name) {
+        return new Fichero(name, info.get(name).getData());
+    }
+
+    public int getPuerto() {// proteger
+        int resul = puerto;
+        puerto++;
+        return resul;
     }
 }
