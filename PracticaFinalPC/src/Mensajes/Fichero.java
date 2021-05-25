@@ -1,5 +1,7 @@
 package Mensajes;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.util.Scanner;
 
@@ -17,14 +19,16 @@ public class Fichero implements Serializable {
     private String name;
     private String data = "";
 
-    public Fichero(String name) {
-        Scanner in = new Scanner(name);
+    public Fichero(String name) throws FileNotFoundException {
+    	this.name = name;
+    	File text = new File(name);
+        Scanner in = new Scanner(text);
+		
         while (in.hasNextLine()) {
             String info = in.nextLine() + System.lineSeparator();
             data += info;
         }
         in.close();
-
     }
 
     public Fichero(String name, String data) {

@@ -2,6 +2,7 @@ package Cliente;
 
 import Mensajes.Fichero;
 import java.util.*;
+import java.util.concurrent.Semaphore;
 
 /**
  * @author Daniela Escobar & Alessandro de Armas
@@ -14,22 +15,25 @@ public class Cliente {
 
     private String direccion_ip;
     private String id_usuario;
+    private Semaphore sem;
 
     ArrayList<String> shared_info = new ArrayList<String>();
     Map<String, Fichero> info = new HashMap<String, Fichero>();
 
     private int puerto = 6543;
 
-    public Cliente(String id_usuario, String direccion_ip, ArrayList<String> lis, Map<String, Fichero> m) {
+    public Cliente(String id_usuario, String direccion_ip, ArrayList<String> lis, Map<String, Fichero> m,Semaphore sem) {
         this.id_usuario = id_usuario;
         this.direccion_ip = direccion_ip;
         this.shared_info = lis;
         this.info = m;
+        this.sem = sem;
     }
 
-    public Cliente(String id_usuario, String direccion_ip) {
+    public Cliente(String id_usuario, String direccion_ip,Semaphore sem) {
         this.id_usuario = id_usuario;
         this.direccion_ip = direccion_ip;
+        this.sem = sem;
     }
 
     public void mensajeConexionServidor() {
@@ -51,10 +55,12 @@ public class Cliente {
     public void addShared_info(Fichero f) {// proteger
         shared_info.add(f.getName());
         info.put(f.getName(), f);
+        sem.release();
+        
     }
 
     public Fichero getFile(String name) {
-        return new Fichero(name, info.get(name).getData());
+        return  info.get(name);
     }
 
     public int getPuerto() {// proteger

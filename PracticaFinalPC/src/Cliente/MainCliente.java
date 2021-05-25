@@ -1,6 +1,7 @@
 
 package Cliente;
 
+import java.io.FileNotFoundException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -13,7 +14,7 @@ import java.util.concurrent.Semaphore;
 import Mensajes.*;
 import Oyentes.OyenteServidor;
 
-/* Clase principal de la aplicación cliente. Tendria al menos los siguientes
+/* Clase principal de la aplicacion cliente. Tendria al menos los siguientes
 atributos: nombre de usuario, direccion ip de la maquina. Puedes tener tambi´en como
 atributos los objetos que proporcionan la comunicaci´on con el servidor (socket y
 flujos). Es responsable de llevar a cabo la comunicaci´on con el servidor, y cuando
@@ -33,7 +34,7 @@ public class MainCliente {
 
 	private static String help = "exit - salir y cortar todas las conexiones";// +System.lineSeparator())
 
-	public static void main(String[] args) {
+	public static void main(String[] args)  {
 		Scanner in = new Scanner(System.in);
 		System.out.println("Bienvenido Usuario");
 		Cliente user;
@@ -47,17 +48,17 @@ public class MainCliente {
 			ArrayList<String> names = new ArrayList<String>();
 			Map<String, Fichero> files = new HashMap<String, Fichero>();
 			for (int i = 2; i < args.length - 1; i++) {
-				Fichero x = new Fichero(args[i]);
-				files.put(x.getName(), x);
-				names.add(x.getName());
+				//Fichero x = new Fichero(args[i]);
+				//files.put(x.getName(), x);
+				//names.add(x.getName());
 			}
-			user = new Cliente(user_id, user_ip, names, files);
+			user = new Cliente(user_id, user_ip, names, files,mainSemaphore);
 		} else {
 			System.out.print("Por favor, introduce nombre de usuario y dirección ip: ");
 			String[] words = in.nextLine().toLowerCase().trim().split("\\s+");
 			String nombre_de_usuario = words[0];
 			String ip = words[1];
-			user = new Cliente(nombre_de_usuario, ip);
+			user = new Cliente(nombre_de_usuario, ip,mainSemaphore);
 			System.out.print("Introduzca IP de servidor: ");
 			words = in.nextLine().toLowerCase().trim().split("\\s+");
 			server_ip = words[0];
@@ -80,7 +81,7 @@ public class MainCliente {
 					new Mensaje_Conexion(user.getId(), "server", user.getId(), user.getIp(), user.getShared_info()));
 			mainSemaphore.acquire();
 			while (go) {
-				System.out.println("Introduzca una acción(help para ayuda):");
+				System.out.println("Introduzca una accion(help para ayuda):");
 				String[] words = in.nextLine().toLowerCase().trim().split("\\s+");// espera por una instruccion
 
 				switch (words[0]) {
@@ -107,9 +108,12 @@ public class MainCliente {
 						break;
 					}
 					case "cargar": {
-						Fichero f = new Fichero(words[1]);
-						user.addShared_info(f);
+						Fichero file = new Fichero(words[1]);
+						user.addShared_info(file);	
+						fout.writeObject(new Mensaje_Fichero_Cargado(user.getId(),"server",file.getName()));
+						mainSemaphore.acquire();	
 						System.out.println("FICHERO AGREGADO");
+						
 						break;
 					}
 					default: {

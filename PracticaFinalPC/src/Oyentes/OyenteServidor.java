@@ -69,21 +69,26 @@ public class OyenteServidor extends Thread {
                         Mensaje_Emitir_Fichero men = (Mensaje_Emitir_Fichero) mensaje;
 
                         int puerto = cliente.getPuerto();
-                        LockBakery l = new LockBakery(1);
+                        //LockBakery l = new LockBakery(1);
 
-                        new Emisor(puerto, cliente.getFile(men.getNombreFichero()), cliente.getId(), l).start();
+                        new Emisor(puerto, cliente.getFile(men.getNombreFichero()), cliente.getId()).start();
 
                         fout.writeObject(new Mensaje_Preparado_ClienteServidor(cliente.getId(), "server",
-                                cliente.getIp(), puerto, men.getEmisor(), l));
+                                cliente.getIp(), puerto, men.getEmisor()));
                         break;
                     }
                     case "Mensaje_Preparado_ServidorCliente": {
                         Mensaje_Preparado_ServidorCliente men = (Mensaje_Preparado_ServidorCliente) mensaje;
-                        (new Receptor(men.getPuerto(), cliente.getId(), men.getIp(), men.getCerrojo(), sem)).start();
+                        (new Receptor(men.getPuerto(), cliente.getId(), men.getIp(), sem)).start();
                         break;
                     }
+                    case "Mensaje_Error_Fichero":{ 
+                    	System.out.println("Fichero no encontrado");
+                    	sem.release();
+                    	break;
+                    	}
                     default: {
-                        System.err.println("DANGER unknown message");
+                        System.err.println("DANGER unknown message"+ mensaje.getTipo());
                         break;
 
                     }

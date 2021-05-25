@@ -14,13 +14,13 @@ class Emisor extends Thread {
     private int puerto;
     private Fichero f;
     private String clienteID;
-    private LockBakery cerrojo;
+   // private LockBakery cerrojo;
 
-    public Emisor(int puerto, Fichero f, String id, LockBakery cerrojo) {// recibir lock
+    public Emisor(int puerto, Fichero f, String id) {// recibir lock
         this.puerto = puerto;
         this.f = f;
         this.clienteID = id;
-        this.cerrojo = cerrojo;
+   //     this.cerrojo = cerrojo;
     }
 
     @Override
@@ -32,9 +32,9 @@ class Emisor extends Thread {
             // ObjectInputStream fin = new ObjectInputStream(s.getInputStream());
 
             fout.writeObject(f);
-            cerrojo.takeLock(0);
-            s.close();
-            listen.close();
+        //    cerrojo.takeLock(0);
+          //  s.close();
+           // listen.close();
         } catch (Exception e) {
             System.err.println(e + " Error al mandar " + f.getName());
         }

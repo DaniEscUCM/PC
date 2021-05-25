@@ -80,8 +80,7 @@ public class OyenteCliente extends Thread {
 
                         // mandar un mensaje pedir fichero
                         if (fout2 != null) {
-                            fout2.writeObject(new Mensaje_Emitir_Fichero("server", owner, men.getNombreFichero(),
-                                    men.getOrigen()));
+                            fout2.writeObject(new Mensaje_Emitir_Fichero("server", owner, men.getNombreFichero(), men.getOrigen()));
                         } else {
                             fout.writeObject(new Mensaje_Error_Fichero("server", men.getOrigen()));
                         }
@@ -91,13 +90,18 @@ public class OyenteCliente extends Thread {
                         Mensaje_Preparado_ClienteServidor men = (Mensaje_Preparado_ClienteServidor) m;
                         server.mandarMensaje(
                                 new Mensaje_Preparado_ServidorCliente("server", men.getDestinoFinal(), men.getIP(),
-                                        men.getPuerto(), men.getDestinoFinal(), men.getCerrojo()),
-                                men.getDestinoFinal());
+                                        men.getPuerto(), men.getDestinoFinal()), men.getDestinoFinal());
                         break;
                     }
-
+                    case"Mensaje_Fichero_Cargado":{
+                    	Mensaje_Fichero_Cargado men = (Mensaje_Fichero_Cargado)m;
+                    	
+                    	server.addFileTo(men.getFile(),men.getOrigen());
+                    	break;
+                    }
+                   
                     default: {
-                        System.err.println("DANGER unknown message");
+                        System.err.println("DANGER unknown message " + m.getTipo());
                         break;
                     }
                 }

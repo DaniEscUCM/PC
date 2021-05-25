@@ -5,7 +5,6 @@ import java.io.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
 import Mensajes.Mensaje_Preparado_ServidorCliente;
 
 /**
@@ -90,9 +89,7 @@ public class Servidor {
      * // lock // unlock return false; }
      */
 
-    public boolean getFile(String origin, String destination, String nameOfFile) {
-        return false;
-    }
+ 
 
     // Metodos para los mensajes
 
@@ -156,16 +153,7 @@ public class Servidor {
         return lista;
     }
 
-    public void pedir_fichero(String origen, String destino) {
-        // TODO Auto-generated method stub
-
-    }
-
-    public void preparado_ciliente_servidor(String origen, String destino) {
-
-    }
-
-    public String getUsuario_from_file(String nombreFichero) {
+      public String getUsuario_from_file(String nombreFichero) {
         l.lock();
         while (nw > 0 || waitw > 0) {
             try {
@@ -238,5 +226,9 @@ public class Servidor {
             oktowrite.signal();
         l.unlock();
     }
+
+	public void addFileTo(String name_file, String origen) {
+			tabla_informacion.get(origen).add(name_file);
+	}
 
 }
