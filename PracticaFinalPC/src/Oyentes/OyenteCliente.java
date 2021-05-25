@@ -6,7 +6,6 @@ import Servidor.Servidor;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
-import Cliente.LockBakery;
 
 /**
  * Implementa el interfaz Runnable y hereda de la clase Thread, y es usada para
@@ -90,10 +89,11 @@ public class OyenteCliente extends Thread {
                     }
                     case "Mensaje_Preparado_ClienteServidor": {
                         Mensaje_Preparado_ClienteServidor men = (Mensaje_Preparado_ClienteServidor) m;
-
-                        server.mandarMensaje(new Mensaje_Preparado_ServidorCliente("server", men.getDestinoFinal(),
-                                men.getIP(), men.getPuerto(), men.getDestinoFinal(), men.getCerrojo()));
-
+                        server.mandarMensaje(
+                                new Mensaje_Preparado_ServidorCliente("server", men.getDestinoFinal(), men.getIP(),
+                                        men.getPuerto(), men.getDestinoFinal(), men.getCerrojo()),
+                                men.getDestinoFinal());
+                        break;
                     }
 
                     default: {

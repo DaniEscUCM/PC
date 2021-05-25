@@ -214,7 +214,7 @@ public class Servidor {
         return fout;
     }
 
-    public void mandarMensaje(Mensaje_Preparado_ServidorClinete mensaje, String destinoFinal) {
+    public void mandarMensaje(Mensaje_Preparado_ServidorCliente mensaje, String destinoFinal) {
         l.lock();
         while (nw > 0 || waitw > 0) {
             try {
@@ -226,7 +226,11 @@ public class Servidor {
         nr++;
         l.unlock();
 
-        tabla_usuarios.get(destinoFinal)[1].writeObject(mensaje);
+        try {
+            ((ObjectOutputStream) tabla_usuarios.get(destinoFinal)[1]).writeObject(mensaje);
+        } catch (Exception e) {
+            System.err.println(e);
+        }
 
         l.lock();
         nr--;

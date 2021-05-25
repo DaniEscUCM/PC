@@ -21,7 +21,7 @@ public class OyenteServidor extends Thread {
     private ObjectOutputStream fout;
     private Semaphore sem;
 
-    public OyenteServidor(Cliente clienet, ObjectInputStream fin, ObjectOutputStream fout, Semaphore sem) {
+    public OyenteServidor(Cliente cliente, ObjectInputStream fin, ObjectOutputStream fout, Semaphore sem) {
         this.cliente = cliente;
         this.fin = fin;
         this.fout = fout;
@@ -72,9 +72,9 @@ public class OyenteServidor extends Thread {
                         LockBakery l = new LockBakery(1);
 
                         new Emisor(puerto, cliente.getFile(men.getNombreFichero()), cliente.getId(), l).start();
-                        // ServerSocket listen = new ServerSocket();
+
                         fout.writeObject(new Mensaje_Preparado_ClienteServidor(cliente.getId(), "server",
-                                cliente.getIp(), puerto, l));
+                                cliente.getIp(), puerto, men.getEmisor(), l));
                         break;
                     }
                     case "Mensaje_Preparado_ServidorCliente": {
@@ -92,7 +92,7 @@ public class OyenteServidor extends Thread {
             fin.close();
             fout.close();
         } catch (Exception e) {
-            System.err.println(e + " " + client.getId());
+            System.err.println(e + " " + cliente.getId());
         }
 
     }

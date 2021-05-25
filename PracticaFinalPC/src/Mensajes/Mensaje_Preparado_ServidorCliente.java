@@ -14,8 +14,8 @@ public class Mensaje_Preparado_ServidorCliente extends Mensaje {
         super(tipo);
     }
 
-    public Mensaje_Preparado_ServidorCliente(String origen, String destino, String ip, int puerto, LockBakery l,
-            String detinoFinal) {
+    public Mensaje_Preparado_ServidorCliente(String origen, String destino, String ip, int puerto, String detinoFinal,
+            LockBakery l) {
         super(tipo, origen, destino);
         this.IP = ip;
         this.puerto = puerto;

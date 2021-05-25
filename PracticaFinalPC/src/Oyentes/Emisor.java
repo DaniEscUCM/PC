@@ -29,7 +29,7 @@ class Emisor extends Thread {
             ServerSocket listen = new ServerSocket(puerto);
             Socket s = listen.accept();
             ObjectOutputStream fout = new ObjectOutputStream(s.getOutputStream());
-            ObjectInputStream fin = new ObjectInputStream(s.getInputStream());
+            // ObjectInputStream fin = new ObjectInputStream(s.getInputStream());
 
             fout.writeObject(f);
             cerrojo.takeLock(0);
