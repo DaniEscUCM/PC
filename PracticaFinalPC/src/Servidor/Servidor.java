@@ -89,8 +89,6 @@ public class Servidor {
      * // lock // unlock return false; }
      */
 
- 
-
     // Metodos para los mensajes
 
     public boolean cerrarConexion(String origen, String destino) {
@@ -123,12 +121,6 @@ public class Servidor {
 
     }
 
-    /*
-     * public void establecerConexion(String origen, String destino) {
-     * 
-     * System.out.println("Se ha conectado el usuario: "); }
-     */
-
     public ArrayList<String> lista_usuarios(String origen, String destino) {
 
         l.lock();
@@ -153,7 +145,7 @@ public class Servidor {
         return lista;
     }
 
-      public String getUsuario_from_file(String nombreFichero) {
+    public String getUsuario_from_file(String nombreFichero) {
         l.lock();
         while (nw > 0 || waitw > 0) {
             try {
@@ -227,8 +219,35 @@ public class Servidor {
         l.unlock();
     }
 
-	public void addFileTo(String name_file, String origen) {
-			tabla_informacion.get(origen).add(name_file);
-	}
+    public void addFileTo(String name_file, String origen) {
+        tabla_informacion.get(origen).add(name_file);
+    }
+
+    public String lista_Ficheros() {
+
+        l.lock();
+        while (nw > 0 || waitw > 0) {
+            try {
+                oktoread.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        nr++;
+        l.unlock();
+
+        String ficheros_disponibles = "";
+        for (String user : users_names) {
+            ficheros_disponibles += tabla_informacion.get(user).toString();
+        }
+
+        l.lock();
+        nr--;
+        if (nr == 0 && waitw > 0)
+            oktowrite.signal();
+        l.unlock();
+
+        return ficheros_disponibles;
+    }
 
 }

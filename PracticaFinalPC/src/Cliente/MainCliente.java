@@ -31,9 +31,15 @@ para la interacci´on con el usuario del sistema.
 
 public class MainCliente {
 
-	private static String help = "exit - salir y cortar todas las conexiones";// +System.lineSeparator())
+	private static String help = "help - imprime este mensaje " + System.lineSeparator()
+			+ "fichero nombre_fichero - pide el fichero nombre_fichero" + System.lineSeparator()
+			+ "lista_usuarios - muestra por pantalla la lista de todos los usuario" + System.lineSeparator()
+			+ "cargar nombre_fichero - carga el fichero nombre_fichero y avisa al servidor" + System.lineSeparator()
+			+ "lista_ficheros - muestra los ficheros que se pueden cargar" + System.lineSeparator()
+			+ "mis_ficheros - muestra los ficheros que tengo cargados" + System.lineSeparator()
+			+ "exit - salir y cortar todas las conexiones";// +System.lineSeparator())
 
-	public static void main(String[] args)  {
+	public static void main(String[] args) {
 		Scanner in = new Scanner(System.in);
 		System.out.println("Bienvenido Usuario");
 		Cliente user;
@@ -47,17 +53,17 @@ public class MainCliente {
 			ArrayList<String> names = new ArrayList<String>();
 			Map<String, Fichero> files = new HashMap<String, Fichero>();
 			for (int i = 2; i < args.length - 1; i++) {
-				//Fichero x = new Fichero(args[i]);
-				//files.put(x.getName(), x);
-				//names.add(x.getName());
+				// Fichero x = new Fichero(args[i]);
+				// files.put(x.getName(), x);
+				// names.add(x.getName());
 			}
-			user = new Cliente(user_id, user_ip, names, files,mainSemaphore);
+			user = new Cliente(user_id, user_ip, names, files, mainSemaphore);
 		} else {
 			System.out.print("Por favor, introduce nombre de usuario y dirección ip: ");
 			String[] words = in.nextLine().toLowerCase().trim().split("\\s+");
 			String nombre_de_usuario = words[0];
 			String ip = words[1];
-			user = new Cliente(nombre_de_usuario, ip,mainSemaphore);
+			user = new Cliente(nombre_de_usuario, ip, mainSemaphore);
 			System.out.print("Introduzca IP de servidor: ");
 			words = in.nextLine().toLowerCase().trim().split("\\s+");
 			server_ip = words[0];
@@ -66,6 +72,9 @@ public class MainCliente {
 		System.out.println("USUARIO: " + user.getId() + " ip: " + user.getIp());
 
 		try {
+			LockBakery disconnect = new LockBakery(2);
+			disconnect.takeLock(0);
+
 			Socket s = new Socket(server_ip, 1234);
 			System.out.println("Estableciendo conexi\u00f3n ...");
 			ObjectOutputStream fout = new ObjectOutputStream(s.getOutputStream());
@@ -76,8 +85,8 @@ public class MainCliente {
 
 			System.out.println("mandando mensaje de conexion");
 
-			fout.writeObject(
-					new Mensaje_Conexion(user.getId(), "server", user.getId(), user.getIp(), user.getShared_info()));
+			fout.writeObject(new Mensaje_Conexion(user.getId(), "server", user.getId(), user.getIp(),
+					user.getShared_info(), disconnect));
 			mainSemaphore.acquire();
 			while (go) {
 				System.out.println("Introduzca una accion(help para ayuda):");
@@ -87,7 +96,6 @@ public class MainCliente {
 					case "exit": {
 						System.out.println("Cerrando todas las conexiones");
 						fout.writeObject(new Mensaje_Cerrar_Conexion(user.getId(), "server"));
-						// TODO cerrar conexiones con los otros useres si es que hay
 						go = false;
 						mainSemaphore.acquire();
 						break;
@@ -108,11 +116,19 @@ public class MainCliente {
 					}
 					case "cargar": {
 						Fichero file = new Fichero(words[1]);
-						user.addShared_info(file);	
-						fout.writeObject(new Mensaje_Fichero_Cargado(user.getId(),"server",file.getName()));
-						mainSemaphore.acquire();	
+						user.addShared_info(file);
+						fout.writeObject(new Mensaje_Fichero_Cargado(user.getId(), "server", file.getName()));
+						mainSemaphore.acquire();
 						System.out.println("FICHERO AGREGADO");
-						
+						break;
+					}
+					case "lista_ficheros": {
+						fout.writeObject(new Mensaje_Lista_Ficheros(user.getId(), "server", "none"));
+						mainSemaphore.acquire();
+						break;
+					}
+					case "mis_ficheros": {
+						System.out.println(user.getShared_info());
 						break;
 					}
 					default: {
@@ -122,6 +138,7 @@ public class MainCliente {
 				}
 
 			}
+			disconnect.releaseLock(0);
 			in.close();
 			s.close();
 		} catch (Exception e) {

@@ -6,6 +6,7 @@ import Servidor.Servidor;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import Cliente.LockBakery;
 
 /**
  * Implementa el interfaz Runnable y hereda de la clase Thread, y es usada para
@@ -24,12 +25,6 @@ public class OyenteCliente extends Thread {
     private final String GoodMsg = "Nuevo usuario conectado : ";
     private final String ErrMsg = "ERROR: no se establecio la conexion";
 
-    // private Servidor ser; --> lo dice en el video 47 33:15, se haga como en
-    // prácticas anteriores,
-    // pasar referencias de las variables. Como los IntReferences, los oyentes sería
-    // los que modifican esta
-    // información, se controlaría con concurrencia, semáforos?
-
     public OyenteCliente(Socket s, Servidor server) {
         this.s = s;
         this.server = server;
@@ -40,8 +35,12 @@ public class OyenteCliente extends Thread {
         try {
             boolean go = true;
             System.out.println("Conectando con nuevo cliente ...");
+
             fout = new ObjectOutputStream(s.getOutputStream());// salida
             fin = new ObjectInputStream(s.getInputStream());// entrada
+
+            LockBakery disconnect = null;
+
             while (go) {
                 System.out.println("Listo para trabajar");
                 Mensaje m = (Mensaje) fin.readObject();
@@ -50,6 +49,7 @@ public class OyenteCliente extends Thread {
                         Mensaje_Conexion men = (Mensaje_Conexion) m;
                         if (server.addUser(men.getOrigen(), men.getIp_cliente(), men.getShared_info(), fin, fout)) {
                             System.out.println(GoodMsg + men.getOrigen());
+                            disconnect = men.getLock();
                             fout.writeObject(new Mensaje_Confirmacion_conexion("server", men.getDestino()));
                         } else {
                             System.out.println(ErrMsg);
@@ -80,7 +80,8 @@ public class OyenteCliente extends Thread {
 
                         // mandar un mensaje pedir fichero
                         if (fout2 != null) {
-                            fout2.writeObject(new Mensaje_Emitir_Fichero("server", owner, men.getNombreFichero(), men.getOrigen()));
+                            fout2.writeObject(new Mensaje_Emitir_Fichero("server", owner, men.getNombreFichero(),
+                                    men.getOrigen()));
                         } else {
                             fout.writeObject(new Mensaje_Error_Fichero("server", men.getOrigen()));
                         }
@@ -90,22 +91,29 @@ public class OyenteCliente extends Thread {
                         Mensaje_Preparado_ClienteServidor men = (Mensaje_Preparado_ClienteServidor) m;
                         server.mandarMensaje(
                                 new Mensaje_Preparado_ServidorCliente("server", men.getDestinoFinal(), men.getIP(),
-                                        men.getPuerto(), men.getDestinoFinal()), men.getDestinoFinal());
+                                        men.getPuerto(), men.getDestinoFinal(), men.getCerrojo()),
+                                men.getDestinoFinal());
                         break;
                     }
-                    case"Mensaje_Fichero_Cargado":{
-                    	Mensaje_Fichero_Cargado men = (Mensaje_Fichero_Cargado)m;
-                    	
-                    	server.addFileTo(men.getFile(),men.getOrigen());
-                    	break;
+                    case "Mensaje_Fichero_Cargado": {
+                        Mensaje_Fichero_Cargado men = (Mensaje_Fichero_Cargado) m;
+
+                        server.addFileTo(men.getFile(), men.getOrigen());
+                        break;
                     }
-                   
+                    case "Mensaje_Lista_Ficheros": {
+                        fout.writeObject(new Mensaje_Lista_Ficheros("server", m.getOrigen(), server.lista_Ficheros()));
+                        break;
+                    }
                     default: {
                         System.err.println("DANGER unknown message " + m.getTipo());
                         break;
                     }
                 }
 
+            }
+            if (disconnect != null) {
+                disconnect.takeLock(1);
             }
             fin.close();
             fout.close();

@@ -58,8 +58,8 @@ public class OyenteServidor extends Thread {
                         break;
                     }
                     case "Mensaje_Confirmar_Lista_Usuarios": {
-                        Mensaje_Confirmar_Lista_Usuarios sem = (Mensaje_Confirmar_Lista_Usuarios) mensaje;
-                        ArrayList<String> lista_usuarios = sem.getLista();
+                        Mensaje_Confirmar_Lista_Usuarios men = (Mensaje_Confirmar_Lista_Usuarios) mensaje;
+                        ArrayList<String> lista_usuarios = men.getLista();
                         System.out.println("Lista de usuarios Registrados :");
                         System.out.println(lista_usuarios);
                         this.sem.release();
@@ -69,31 +69,33 @@ public class OyenteServidor extends Thread {
                         Mensaje_Emitir_Fichero men = (Mensaje_Emitir_Fichero) mensaje;
 
                         int puerto = cliente.getPuerto();
-                        //LockBakery l = new LockBakery(1);
+                        LockBakery l = new LockBakery(2);
+                        l.takeLock(0);
 
-                        new Emisor(puerto, cliente.getFile(men.getNombreFichero()), cliente.getId()).start();
+                        new Emisor(puerto, cliente.getFile(men.getNombreFichero()), l).start();
 
                         fout.writeObject(new Mensaje_Preparado_ClienteServidor(cliente.getId(), "server",
-                                cliente.getIp(), puerto, men.getEmisor()));
+                                cliente.getIp(), puerto, men.getEmisor(), l));
                         break;
                     }
                     case "Mensaje_Preparado_ServidorCliente": {
                         Mensaje_Preparado_ServidorCliente men = (Mensaje_Preparado_ServidorCliente) mensaje;
-                        (new Receptor(men.getPuerto(), cliente.getId(), men.getIp(), sem)).start();
+                        (new Receptor(men.getPuerto(), men.getIp(), sem, men.getCerrojo())).start();
                         break;
                     }
-                    case "Mensaje_Error_Fichero":{ 
-                    	System.out.println("Fichero no encontrado");
-                    	sem.release();
-                    	break;
-                    	}
+                    case "Mensaje_Error_Fichero": {
+                        System.out.println("Fichero no encontrado");
+                        sem.release();
+                        break;
+                    }
                     default: {
-                        System.err.println("DANGER unknown message"+ mensaje.getTipo());
+                        System.err.println("DANGER unknown message" + mensaje.getTipo());
                         break;
 
                     }
                 }
             }
+
             fin.close();
             fout.close();
         } catch (Exception e) {

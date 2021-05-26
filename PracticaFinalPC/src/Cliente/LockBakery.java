@@ -1,6 +1,8 @@
 package Cliente;
 
-public class LockBakery {
+import java.io.Serializable;
+
+public class LockBakery implements Serializable{
 
 	private IntReference[] turn;
 
