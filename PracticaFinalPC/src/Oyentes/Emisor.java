@@ -8,13 +8,21 @@ import Cliente.LockBakery;
 
 import java.io.ObjectOutputStream;
 
+/**
+ * 
+ * @author Daniela Escobar & Alessandro de Armas
+ * 
+ * 			Manda el fichero solicitado y espera a que le desbloqueen para cerrar la comunición con el Receptor.
+ *
+ */
+
 class Emisor extends Thread {
 
     private int puerto;
     private Fichero f;
     private LockBakery cerrojo;
 
-    public Emisor(int puerto, Fichero f, LockBakery cerrojo) {// recibir lock
+    public Emisor(int puerto, Fichero f, LockBakery cerrojo) {
         this.puerto = puerto;
         this.f = f;
         this.cerrojo = cerrojo;

@@ -17,8 +17,8 @@ import Mensajes.Mensaje_Preparado_ServidorCliente;
  */
 public class Servidor {
 
-    private Map<String, Object[]> tabla_usuarios = new HashMap<String, Object[]>();
     // String Id_usuario , array con sus conexiones
+    private Map<String, Object[]> tabla_usuarios = new HashMap<String, Object[]>();
 
     // tabla de informacion son los ficheros que se quieren compartir con los demas
     private Map<String, ArrayList<String>> tabla_informacion = new HashMap<String, ArrayList<String>>();
@@ -26,42 +26,27 @@ public class Servidor {
     // Tabla de cada id con su ip
     private Map<String, String> tabla_ip = new HashMap<String, String>();
 
+    //lista de todos los usuarios
     private ArrayList<String> users_names = new ArrayList<String>();
+    
+    //puerto para asignar a cada cliente y así  cada cliente tiene un puerto distinto
+    private int puerto;
 
-    // TODO lista de oyentes con los clientes, informar cuando se cierre el
-    // servidor.
-    // oyente[i].mensaje_de_cerrarConexion()
-
+    //Variables condición del monitor
     private int nr = 0, nw = 0, waitw = 0;
     private Lock l = new ReentrantLock(true);
     private final Condition oktoread = l.newCondition(), oktowrite = l.newCondition();
+    
+    
+    public Servidor(int puerto) {
+		this.puerto=puerto;
+	}
 
-    public Servidor() {
-        // loadClients();
-    }
 
-    /*
-     * private void loadClients() { try { Scanner filin = new Scanner("users.txt");
-     * String[] words; while (filin.hasNextLine()) { words =
-     * filin.nextLine().toLowerCase().trim().split("\\s+"); MainCliente.main(words);
-     * } filin.close(); } catch (Exception e) { System.out.println(e); } }
-     */
-
-    public boolean addUser(String id, String ip, ArrayList<String> shared, ObjectInputStream in,
+	public boolean addUser(String id, String ip, ArrayList<String> shared, ObjectInputStream in,
             ObjectOutputStream out) {
 
-        l.lock();
-        while (nw > 0 || nr > 0) {
-            try {
-                waitw++;
-                oktowrite.wait();
-            } catch (InterruptedException e) {
-                System.out.println("dio un error en el oktowrite");
-            }
-        }
-        waitw--;
-        nw++;
-        l.unlock();
+        take_writer();
 
         if (tabla_usuarios.containsKey(id)) {
             return false;
@@ -71,39 +56,14 @@ public class Servidor {
         tabla_usuarios.put(id, new Object[] { (Object) in, (Object) out });
         tabla_ip.put(id, ip);
 
-        l.lock();
-        nw--;
-        oktowrite.signal();
-        oktoread.signalAll();
-        l.unlock();
+        release_writer();
 
         return true;
     }
 
-    /*
-     * public boolean deleteUser(String id) { l.lock(); while (nw > 0 || nr > 0) try
-     * { oktowrite.wait(); } catch (InterruptedException e) {
-     * 
-     * } nw++; l.unlock(); // eliminar la informacion del cliente de las tablas
-     * 
-     * // lock // unlock return false; }
-     */
-
-    // Metodos para los mensajes
-
+   
     public boolean cerrarConexion(String origen, String destino) {
-        l.lock();
-        while (nw > 0 || nr > 0) {
-            try {
-                waitw++;
-                oktowrite.wait();
-            } catch (InterruptedException e) {
-                System.out.println("dio un error en el oktowrite");
-            }
-        }
-        waitw--;
-        nw++;
-        l.unlock();
+        take_writer();
 
         if (!tabla_usuarios.containsKey(origen)) {
             return false;
@@ -112,50 +72,26 @@ public class Servidor {
         tabla_informacion.remove(origen);
         users_names.remove(origen);
         tabla_ip.remove(origen);
-        l.lock();
-        nw--;
-        oktowrite.signal();
-        oktoread.signalAll();
-        l.unlock();
+
+        release_writer();
         return true;
 
     }
 
-    public ArrayList<String> lista_usuarios(String origen, String destino) {
+    public ArrayList<String> lista_usuarios() {
 
-        l.lock();
-        while (nw > 0 || waitw > 0) {
-            try {
-                oktoread.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        nr++;
-        l.unlock();
+        take_reader();
 
         ArrayList<String> lista = users_names;
 
-        l.lock();
-        nr--;
-        if (nr == 0 && waitw > 0)
-            oktowrite.signal();
-        l.unlock();
+        release_reader();
 
         return lista;
     }
 
     public String getUsuario_from_file(String nombreFichero) {
-        l.lock();
-        while (nw > 0 || waitw > 0) {
-            try {
-                oktoread.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        nr++;
-        l.unlock();
+        take_reader();
+        
         String user2 = "none";
         for (String user : users_names) {
             if (tabla_informacion.get(user).contains(nombreFichero)) {
@@ -163,48 +99,25 @@ public class Servidor {
                 break;
             }
         }
-        l.lock();
-        nr--;
-        if (nr == 0 && waitw > 0)
-            oktowrite.signal();
-        l.unlock();
+        release_reader();
         return user2;
     }
 
     public ObjectOutputStream getFlujo_from_user(String user) {
-        l.lock();
-        while (nw > 0 || waitw > 0) {
-            try {
-                oktoread.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        nr++;
-        l.unlock();
+        take_reader();
+        
         ObjectOutputStream fout = null;
         if (user != "none") {
             fout = (ObjectOutputStream) tabla_usuarios.get(user)[1];
         }
-        l.lock();
-        nr--;
-        if (nr == 0 && waitw > 0)
-            oktowrite.signal();
-        l.unlock();
+
+        release_reader();
         return fout;
     }
 
     public void mandarMensaje(Mensaje_Preparado_ServidorCliente mensaje, String destinoFinal) {
-        l.lock();
-        while (nw > 0 || waitw > 0) {
-            try {
-                oktoread.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        nr++;
-        l.unlock();
+    	take_reader();
+
 
         try {
             ((ObjectOutputStream) tabla_usuarios.get(destinoFinal)[1]).writeObject(mensaje);
@@ -212,20 +125,59 @@ public class Servidor {
             System.err.println(e);
         }
 
-        l.lock();
-        nr--;
-        if (nr == 0 && waitw > 0)
-            oktowrite.signal();
-        l.unlock();
+        release_reader();
     }
 
     public void addFileTo(String name_file, String origen) {
+    	take_writer();
         tabla_informacion.get(origen).add(name_file);
+        release_writer();
     }
 
-    public String lista_Ficheros() {
+    public ArrayList<String> lista_Ficheros() {
 
-        l.lock();
+        take_reader();
+
+        ArrayList<String> ficheros_disponibles = new ArrayList<String>();
+        for (String user : users_names) {
+            
+        	ficheros_disponibles.addAll(tabla_informacion.get(user));
+        }
+
+        release_reader();
+
+        return ficheros_disponibles;
+    }
+    
+    
+    
+    public int getPuerto() {
+    	take_writer();
+    	int resul=this.puerto;
+    	puerto++;
+    	release_writer();
+		return resul;
+	}
+
+    //Funciones para poder escribir/leer
+
+	private void take_writer() {
+    	l.lock();
+        while (nw > 0 || nr > 0) {
+            try {
+                waitw++;
+                oktowrite.wait();
+                waitw--;
+            } catch (InterruptedException e) {
+                System.out.println("dio un error en el oktowrite");
+            }
+        }        
+        nw++;
+        l.unlock();
+    }
+    
+    private void take_reader() {
+    	l.lock();
         while (nw > 0 || waitw > 0) {
             try {
                 oktoread.wait();
@@ -235,19 +187,22 @@ public class Servidor {
         }
         nr++;
         l.unlock();
-
-        String ficheros_disponibles = "";
-        for (String user : users_names) {
-            ficheros_disponibles += tabla_informacion.get(user).toString();
-        }
-
-        l.lock();
+    }
+    
+    private void release_writer() {
+    	l.lock();
+        nw--;
+        oktowrite.signal();
+        oktoread.signalAll();
+        l.unlock();
+    }
+    
+    private void release_reader(){
+    	l.lock();
         nr--;
         if (nr == 0 && waitw > 0)
             oktowrite.signal();
         l.unlock();
-
-        return ficheros_disponibles;
     }
 
 }

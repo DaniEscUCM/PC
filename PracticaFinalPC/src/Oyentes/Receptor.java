@@ -6,6 +6,13 @@ import java.util.concurrent.Semaphore;
 import java.io.ObjectInputStream;
 import Cliente.LockBakery;
 
+/**
+ * 
+ * @author Daniela Escobar & Alessandro de Armas
+ * 
+ * 			Manda el fichero solicitado y espera a que le desbloqueen para cerrar la comunición con el Receptor.
+ *
+ */
 class Receptor extends Thread {
 
     private int puerto;

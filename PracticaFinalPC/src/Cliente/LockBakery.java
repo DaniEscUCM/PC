@@ -2,7 +2,15 @@ package Cliente;
 
 import java.io.Serializable;
 
+/**
+ * 
+ * @author Daniela Escobar & Alessandro de Armas
+ *
+ */
+
 public class LockBakery implements Serializable{
+
+	private static final long serialVersionUID = -236436675382536593L;
 
 	private IntReference[] turn;
 
@@ -29,8 +37,7 @@ public class LockBakery implements Serializable{
 		turn[i].n = max(turn) + 1;
 		for (int j = 0; j < n; j++) {
 			if (j != i) {
-				while (mayor(i, j) && turn[j].n != -1)
-					;
+				while (mayor(i, j) && turn[j].n != -1);
 			}
 		}
 	}

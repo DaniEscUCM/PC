@@ -4,9 +4,6 @@ package Cliente;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.Semaphore;
 
@@ -31,13 +28,13 @@ para la interacci´on con el usuario del sistema.
 
 public class MainCliente {
 
-	private static String help = "help - imprime este mensaje " + System.lineSeparator()
-			+ "fichero nombre_fichero - pide el fichero nombre_fichero" + System.lineSeparator()
-			+ "lista_usuarios - muestra por pantalla la lista de todos los usuario" + System.lineSeparator()
-			+ "cargar nombre_fichero - carga el fichero nombre_fichero y avisa al servidor" + System.lineSeparator()
-			+ "lista_ficheros - muestra los ficheros que se pueden cargar" + System.lineSeparator()
-			+ "mis_ficheros - muestra los ficheros que tengo cargados" + System.lineSeparator()
-			+ "exit - salir y cortar todas las conexiones";// +System.lineSeparator())
+	private static String help = 	"help                   -   imprime este mensaje " + System.lineSeparator()
+								+ 	"fichero nombre_fichero -   pide el fichero nombre_fichero y muestra su contenido por pantalla" + System.lineSeparator()
+								+ 	"lista_usuarios         -   muestra por pantalla la lista de todos los usuario" + System.lineSeparator()
+								+ 	"cargar nombre_fichero  -   carga el fichero nombre_fichero y avisa al servidor. Tiene que ser .txt" + System.lineSeparator()
+								+ 	"lista_ficheros         -   muestra los ficheros que se pueden cargar" + System.lineSeparator()
+								+ 	"mis_ficheros           -   muestra los ficheros que tengo cargados" + System.lineSeparator()
+								+ 	"exit                   -   salir y cortar todas las conexiones";
 
 	public static void main(String[] args) {
 		Scanner in = new Scanner(System.in);
@@ -47,18 +44,7 @@ public class MainCliente {
 		String server_ip = "localhost";
 		Semaphore mainSemaphore = new Semaphore(0);
 
-		if (args.length > 0) {
-			String user_id = args[0];
-			String user_ip = args[1];
-			ArrayList<String> names = new ArrayList<String>();
-			Map<String, Fichero> files = new HashMap<String, Fichero>();
-			for (int i = 2; i < args.length - 1; i++) {
-				// Fichero x = new Fichero(args[i]);
-				// files.put(x.getName(), x);
-				// names.add(x.getName());
-			}
-			user = new Cliente(user_id, user_ip, names, files, mainSemaphore);
-		} else {
+		
 			System.out.print("Por favor, introduce nombre de usuario y dirección ip: ");
 			String[] words = in.nextLine().toLowerCase().trim().split("\\s+");
 			String nombre_de_usuario = words[0];
@@ -67,32 +53,30 @@ public class MainCliente {
 			System.out.print("Introduzca IP de servidor: ");
 			words = in.nextLine().toLowerCase().trim().split("\\s+");
 			server_ip = words[0];
-		}
+		
 
 		System.out.println("USUARIO: " + user.getId() + " ip: " + user.getIp());
 
+		
 		try {
-			LockBakery disconnect = new LockBakery(2);
-			disconnect.takeLock(0);
+		Socket s = new Socket(server_ip, 1234);
+		System.out.println("Estableciendo conexi\u00f3n ...");
+		ObjectOutputStream fout = new ObjectOutputStream(s.getOutputStream());
+		ObjectInputStream fin = new ObjectInputStream(s.getInputStream());
 
-			Socket s = new Socket(server_ip, 1234);
-			System.out.println("Estableciendo conexi\u00f3n ...");
-			ObjectOutputStream fout = new ObjectOutputStream(s.getOutputStream());
-			ObjectInputStream fin = new ObjectInputStream(s.getInputStream());
+		OyenteServidor o = new OyenteServidor(user, fin, fout, mainSemaphore);
+		o.start();
+		System.out.println("mandando mensaje de conexi\u00f3n");
 
-			OyenteServidor o = new OyenteServidor(user, fin, fout, mainSemaphore);
-			o.start();
+		fout.writeObject(new Mensaje_Conexion(user.getId(), "server", user.getId(), user.getIp(),user.getShared_info()));
+		mainSemaphore.acquire();
 
-			System.out.println("mandando mensaje de conexion");
-
-			fout.writeObject(new Mensaje_Conexion(user.getId(), "server", user.getId(), user.getIp(),
-					user.getShared_info(), disconnect));
-			mainSemaphore.acquire();
-			while (go) {
-				System.out.println("Introduzca una accion(help para ayuda):");
-				String[] words = in.nextLine().toLowerCase().trim().split("\\s+");// espera por una instruccion
-
-				switch (words[0]) {
+		while (go) {
+				
+			System.out.print("Introduzca una acci\u00f3n(help para ayuda):");
+			words = in.nextLine().toLowerCase().trim().split("\\s+");// espera por una instruccion
+			try {
+				switch (words[0]) {			
 					case "exit": {
 						System.out.println("Cerrando todas las conexiones");
 						fout.writeObject(new Mensaje_Cerrar_Conexion(user.getId(), "server"));
@@ -123,7 +107,7 @@ public class MainCliente {
 						break;
 					}
 					case "lista_ficheros": {
-						fout.writeObject(new Mensaje_Lista_Ficheros(user.getId(), "server", "none"));
+						fout.writeObject(new Mensaje_Lista_Ficheros(user.getId(), "server", null));
 						mainSemaphore.acquire();
 						break;
 					}
@@ -136,32 +120,16 @@ public class MainCliente {
 						break;
 					}
 				}
-
+			}catch (Exception e) {
+				System.err.println(e);
 			}
-			disconnect.releaseLock(0);
-			in.close();
-			s.close();
-		} catch (Exception e) {
-			System.err.println(e);
+			
 		}
 
-		/*
-		 * 
-		 * InputStream() Fichero f = (Fichero) objectInput.readObject();->esto sería
-		 * agregar un nuevo archivo??
-		 *
-		 * 
-		 */
-		/*
-		 * - leer nombre teclado - crear socket con servidor - crear nuevo thread
-		 * OyenteServidor para leer el socket - enviar MENSAJE_CONEXION - establecer
-		 * menu con usuario: consultar lista usuarios: enviar MENSAJE_LISTA_USUARIOS
-		 * -pedir fichero enviar MENSAJE_PEDIR_FICHERO 3 -salir enviar
-		 * MENSAJE_CERRAR_CONEXION - crear nuevo thread OyenteServidor para leer el
-		 * socket - enviar MENSAJE_CONEXION - establecer menu con usuario: consultar
-		 * lista usuarios: enviar MENSAJE_LISTA_USUARIOS -pedir fichero enviar
-		 * MENSAJE_PEDIR_FICHERO 3 -salir enviar MENSAJE_CERRAR_CONEXION
-		 */
-
+		in.close();
+		s.close();
+		}catch(Exception e) {
+			System.out.println(e+" Error al desconectar cliente");
+		}
 	}
 }

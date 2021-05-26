@@ -15,7 +15,7 @@ public class MainServidor {
     private static final int PUERTO = 1234;
 
     public static void main(String[] args) {
-        Servidor server = new Servidor();
+        Servidor server = new Servidor(PUERTO+1);
         try {
             listen = new ServerSocket(PUERTO);
         } catch (Exception e) {

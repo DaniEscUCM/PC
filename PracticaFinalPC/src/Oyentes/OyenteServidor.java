@@ -46,7 +46,7 @@ public class OyenteServidor extends Thread {
                         this.sem.release();
                         break;
                     }
-                    case "Mensaje_Confirmar_Desconecion": {
+                    case "Mensaje_Confirmar_Desconexion": {
                         go = false;
                         System.out.println("Desconectado del Servidor");
                         this.sem.release();
@@ -68,14 +68,14 @@ public class OyenteServidor extends Thread {
                     case "Mensaje_Emitir_Fichero": {
                         Mensaje_Emitir_Fichero men = (Mensaje_Emitir_Fichero) mensaje;
 
-                        int puerto = cliente.getPuerto();
+                       //int puerto = cliente.getPuerto();
                         LockBakery l = new LockBakery(2);
                         l.takeLock(0);
 
-                        new Emisor(puerto, cliente.getFile(men.getNombreFichero()), l).start();
+                        new Emisor(men.getPuerto(), cliente.getFile(men.getNombreFichero()), l).start();
 
                         fout.writeObject(new Mensaje_Preparado_ClienteServidor(cliente.getId(), "server",
-                                cliente.getIp(), puerto, men.getEmisor(), l));
+                                cliente.getIp(), men.getPuerto(), men.getEmisor(), l));
                         break;
                     }
                     case "Mensaje_Preparado_ServidorCliente": {
@@ -88,16 +88,23 @@ public class OyenteServidor extends Thread {
                         sem.release();
                         break;
                     }
+                    case "Mensaje_Lista_Ficheros":{
+                    	Mensaje_Lista_Ficheros men=(Mensaje_Lista_Ficheros) mensaje;
+                    	System.out.println(men.getLista_ficheros());
+                    	sem.release();
+                    	break;
+                    }
                     default: {
-                        System.err.println("DANGER unknown message" + mensaje.getTipo());
+                        System.err.println("DANGER unknown message " + mensaje.getTipo());
+                        sem.release();
                         break;
 
                     }
                 }
             }
 
-            fin.close();
-            fout.close();
+          //  fin.close();
+         //   fout.close();
         } catch (Exception e) {
             System.err.println(e + " " + cliente.getId());
         }

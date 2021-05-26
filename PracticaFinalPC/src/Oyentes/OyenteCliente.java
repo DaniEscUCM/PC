@@ -6,7 +6,6 @@ import Servidor.Servidor;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
-import Cliente.LockBakery;
 
 /**
  * Implementa el interfaz Runnable y hereda de la clase Thread, y es usada para
@@ -39,17 +38,15 @@ public class OyenteCliente extends Thread {
             fout = new ObjectOutputStream(s.getOutputStream());// salida
             fin = new ObjectInputStream(s.getInputStream());// entrada
 
-            LockBakery disconnect = null;
-
+            System.out.println("Listo para trabajar");
             while (go) {
-                System.out.println("Listo para trabajar");
+                
                 Mensaje m = (Mensaje) fin.readObject();
                 switch (m.getTipo()) {
                     case "Mensaje_Conexion": {
                         Mensaje_Conexion men = (Mensaje_Conexion) m;
                         if (server.addUser(men.getOrigen(), men.getIp_cliente(), men.getShared_info(), fin, fout)) {
                             System.out.println(GoodMsg + men.getOrigen());
-                            disconnect = men.getLock();
                             fout.writeObject(new Mensaje_Confirmacion_conexion("server", men.getDestino()));
                         } else {
                             System.out.println(ErrMsg);
@@ -61,7 +58,7 @@ public class OyenteCliente extends Thread {
                         if (server.cerrarConexion(m.getOrigen(), m.getDestino())) {
                             go = false;
                             System.out.println("El cliente: " + m.getOrigen() + " se ha desconectado");
-                            fout.writeObject(new Mensaje_Confirmar_Desconecion("server", m.getOrigen()));
+                            fout.writeObject(new Mensaje_Confirmar_Desconexion("server", m.getOrigen()));
                         } else {
                             System.out.println("El cliente: " + m.getOrigen() + " no se ha desconectado");
                             fout.writeObject(new Mensaje_Error_Desconecion("server", m.getOrigen()));
@@ -69,7 +66,7 @@ public class OyenteCliente extends Thread {
                         break;
                     }
                     case "Mensaje_Lista_Usuarios": {
-                        ArrayList<String> lista = server.lista_usuarios(m.getOrigen(), m.getDestino());
+                        ArrayList<String> lista = server.lista_usuarios();
                         fout.writeObject(new Mensaje_Confirmar_Lista_Usuarios("server", m.getOrigen(), lista));
                         break;
                     }
@@ -77,11 +74,11 @@ public class OyenteCliente extends Thread {
                         Mensaje_Pedir_Fichero men = (Mensaje_Pedir_Fichero) m;
                         String owner = server.getUsuario_from_file(men.getNombreFichero());
                         ObjectOutputStream fout2 = server.getFlujo_from_user(owner);
+                        int _puerto=server.getPuerto();
 
-                        // mandar un mensaje pedir fichero
                         if (fout2 != null) {
                             fout2.writeObject(new Mensaje_Emitir_Fichero("server", owner, men.getNombreFichero(),
-                                    men.getOrigen()));
+                                    men.getOrigen(),_puerto));
                         } else {
                             fout.writeObject(new Mensaje_Error_Fichero("server", men.getOrigen()));
                         }
@@ -112,11 +109,7 @@ public class OyenteCliente extends Thread {
                 }
 
             }
-            if (disconnect != null) {
-                disconnect.takeLock(1);
-            }
-            fin.close();
-            fout.close();
+            
         } catch (Exception e) {
             System.out.println(e);
         }
