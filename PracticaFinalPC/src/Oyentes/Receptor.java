@@ -16,7 +16,6 @@ class Receptor extends Thread {
 
     private int puerto;
     private String ip;
-    // private Semaphore cerrojo;
     private LockBakery cerrojo;
 
     public Receptor(int puerto, String ip, LockBakery cerrojo) {

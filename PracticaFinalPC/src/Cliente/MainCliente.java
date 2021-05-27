@@ -41,7 +41,6 @@ public class MainCliente {
 		Boolean go = true;
 		String server_ip = "localhost";
 
-		// Semaphore mainSemaphore = new Semaphore(0);
 		LockBakery lock = new LockBakery(2);
 
 		System.out.print("Por favor, introduce nombre de usuario y direcci\u00f3n ip: ");
@@ -81,19 +80,17 @@ public class MainCliente {
 							System.out.println("Cerrando todas las conexiones");
 							fout.writeObject(new Mensaje_Cerrar_Conexion(user.getId(), "server"));
 							go = false;
-							// mainSemaphore.acquire();
 							lock.takeLock(1);
 							break;
 						}
 						case "fichero": {
 							fout.writeObject(new Mensaje_Pedir_Fichero(user.getId(), "server", words[1]));
-							// mainSemaphore.acquire();
+						
 							lock.takeLock(1);
 							break;
 						}
 						case "lista_usuarios": {
 							fout.writeObject(new Mensaje_Lista_Usuarios(user.getId(), "server"));
-							// mainSemaphore.acquire();
 							lock.takeLock(1);
 							break;
 						}
@@ -105,7 +102,7 @@ public class MainCliente {
 							Fichero file = new Fichero(words[1]);
 							user.addShared_info(file);
 							fout.writeObject(new Mensaje_Fichero_Cargado(user.getId(), "server", file.getName()));
-							// mainSemaphore.acquire();
+						
 							lock.takeLock(1);
 							System.out.println("FICHERO AGREGADO");
 							break;
@@ -113,7 +110,7 @@ public class MainCliente {
 						case "lista_ficheros": {
 							fout.writeObject(new Mensaje_Lista_Ficheros(user.getId(), "server", null));
 							lock.takeLock(1);
-							// mainSemaphore.acquire();
+						
 							break;
 						}
 						case "mis_ficheros": {

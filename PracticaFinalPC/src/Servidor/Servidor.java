@@ -9,7 +9,14 @@ import Mensajes.Mensaje_Preparado_ServidorCliente;
 import java.util.concurrent.Semaphore;
 
 /**
- * @author Daniela Escobar y Alessandro de Armas La clase Servidor contiene toda
+ * 
+ * HECHO EN PAREJA 
+ * 
+ * @author Daniela Escobar y Alessandro de Armas 
+ * 
+ * 
+ * 
+ * 		La clase Servidor contiene toda
  *         la informacion necesaria para realizar las distintas conexiones.
  *         Trabaja como un monitor para proteger los datos que se modifican, en
  *         este caso las tablas. El array con los nombre de usuario se protegen
@@ -31,6 +38,7 @@ public class Servidor {
     // puerto para asignar a cada cliente y así cada cliente tiene un puerto
     // distinto
     private int puerto;
+    
     // Variables de semáforo
     private int sem_nr = 0, sem_nw = 0, sem_waitingw = 0, sem_waitingr = 0;
     private Semaphore r, w, body;
@@ -91,7 +99,7 @@ public class Servidor {
 
         take_reader_user();
 
-        ArrayList<String> lista = users_names;
+        ArrayList<String> lista = new  ArrayList<String>(users_names);
 
         release_reader_user();
 
@@ -221,11 +229,11 @@ public class Servidor {
             if (sem_nw > 0 || sem_waitingw > 0) {
                 sem_waitingr++;
                 body.release();
-                r.acquire();
+                r.acquire();//PT
             }
             sem_nr++;
             if (sem_nw == 0 && sem_waitingw > 0) {
-                r.release();
+                r.release();//PT
             } else {
                 body.release();
             }
@@ -244,7 +252,7 @@ public class Servidor {
                 w.release();// PT
             } else if (sem_waitingr > 0) {
                 sem_waitingr--;
-                r.release();
+                r.release();//PT
             } else {
                 body.release();
             }

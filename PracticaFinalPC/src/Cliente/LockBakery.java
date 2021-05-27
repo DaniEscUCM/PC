@@ -5,7 +5,8 @@ import java.io.Serializable;
 /**
  * 
  * @author Daniela Escobar & Alessandro de Armas
- *
+ *	
+ *Lock Bakery de practica 2
  */
 
 public class LockBakery implements Serializable{
