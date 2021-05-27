@@ -6,7 +6,6 @@ import java.net.Socket;
 import java.util.Scanner;
 import Mensajes.*;
 import Oyentes.OyenteServidor;
-import Cliente.LockBakery;
 
 /* Clase principal de la aplicacion cliente. Tendria al menos los siguientes
 atributos: nombre de usuario, direccion ip de la maquina. Puedes tener tambi´en como
