@@ -6,15 +6,17 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import Mensajes.Mensaje_Preparado_ServidorCliente;
+import java.util.concurrent.Semaphore;
 
 /**
- * @author Daniela Escobar y Alessandro de Armas
- * 
- *         La clase Servidor contiene toda la informacion necesaria para
- *         realizar las distintas conexiones. Trabaja como un monitor para
- *         proteger los datos que se modifican.
- *
+ * @author Daniela Escobar y Alessandro de Armas La clase Servidor contiene toda
+ *         la informacion necesaria para realizar las distintas conexiones.
+ *         Trabaja como un monitor para proteger los datos que se modifican, en
+ *         este caso las tablas. El array con los nombre de usuario se protegen
+ *         con semáforos, solo por variedad. Todos usan formato similar al
+ *         problema de Lector-Escritor.
  */
+
 public class Servidor {
 
     // String Id_usuario , array con sus conexiones
@@ -23,27 +25,29 @@ public class Servidor {
     // tabla de informacion son los ficheros que se quieren compartir con los demas
     private Map<String, ArrayList<String>> tabla_informacion = new HashMap<String, ArrayList<String>>();
 
-    // Tabla de cada id con su ip
-    private Map<String, String> tabla_ip = new HashMap<String, String>();
-
-    //lista de todos los usuarios
+    // lista de todos los usuarios
     private ArrayList<String> users_names = new ArrayList<String>();
-    
-    //puerto para asignar a cada cliente y así  cada cliente tiene un puerto distinto
-    private int puerto;
 
-    //Variables condición del monitor
+    // puerto para asignar a cada cliente y así cada cliente tiene un puerto
+    // distinto
+    private int puerto;
+    // Variables de semáforo
+    private int sem_nr = 0, sem_nw = 0, sem_waitingw = 0, sem_waitingr = 0;
+    private Semaphore r, w, body;
+
+    // Variables condición del monitor
     private int nr = 0, nw = 0, waitw = 0;
     private Lock l = new ReentrantLock(true);
     private final Condition oktoread = l.newCondition(), oktowrite = l.newCondition();
-    
-    
+
     public Servidor(int puerto) {
-		this.puerto=puerto;
-	}
+        this.puerto = puerto;
+        r = new Semaphore(0);
+        w = new Semaphore(0);
+        body = new Semaphore(0);
+    }
 
-
-	public boolean addUser(String id, String ip, ArrayList<String> shared, ObjectInputStream in,
+    public boolean addUser(String id, String ip, ArrayList<String> shared, ObjectInputStream in,
             ObjectOutputStream out) {
 
         take_writer();
@@ -52,16 +56,20 @@ public class Servidor {
             return false;
         }
         tabla_informacion.put(id, shared);
+
+        take_writer_user();
+
         users_names.add(id);
+
+        release_writer_user();
+
         tabla_usuarios.put(id, new Object[] { (Object) in, (Object) out });
-        tabla_ip.put(id, ip);
 
         release_writer();
 
         return true;
     }
 
-   
     public boolean cerrarConexion(String origen, String destino) {
         take_writer();
 
@@ -70,28 +78,29 @@ public class Servidor {
         }
         tabla_usuarios.remove(origen);
         tabla_informacion.remove(origen);
+
+        take_writer_user();
         users_names.remove(origen);
-        tabla_ip.remove(origen);
+        release_writer_user();
 
         release_writer();
         return true;
-
     }
 
     public ArrayList<String> lista_usuarios() {
 
-        take_reader();
+        take_reader_user();
 
         ArrayList<String> lista = users_names;
 
-        release_reader();
+        release_reader_user();
 
         return lista;
     }
 
     public String getUsuario_from_file(String nombreFichero) {
-        take_reader();
-        
+        take_reader();// protege tabla_información
+        take_reader_user();// protege user_names
         String user2 = "none";
         for (String user : users_names) {
             if (tabla_informacion.get(user).contains(nombreFichero)) {
@@ -99,13 +108,14 @@ public class Servidor {
                 break;
             }
         }
+        release_reader_user();
         release_reader();
         return user2;
     }
 
     public ObjectOutputStream getFlujo_from_user(String user) {
         take_reader();
-        
+
         ObjectOutputStream fout = null;
         if (user != "none") {
             fout = (ObjectOutputStream) tabla_usuarios.get(user)[1];
@@ -116,8 +126,7 @@ public class Servidor {
     }
 
     public void mandarMensaje(Mensaje_Preparado_ServidorCliente mensaje, String destinoFinal) {
-    	take_reader();
-
+        take_reader();
 
         try {
             ((ObjectOutputStream) tabla_usuarios.get(destinoFinal)[1]).writeObject(mensaje);
@@ -129,7 +138,7 @@ public class Servidor {
     }
 
     public void addFileTo(String name_file, String origen) {
-    	take_writer();
+        take_writer();
         tabla_informacion.get(origen).add(name_file);
         release_writer();
     }
@@ -137,32 +146,31 @@ public class Servidor {
     public ArrayList<String> lista_Ficheros() {
 
         take_reader();
-
+        take_reader_user();
         ArrayList<String> ficheros_disponibles = new ArrayList<String>();
         for (String user : users_names) {
-            
-        	ficheros_disponibles.addAll(tabla_informacion.get(user));
-        }
 
+            ficheros_disponibles.addAll(tabla_informacion.get(user));
+        }
+        release_reader_user();
         release_reader();
 
         return ficheros_disponibles;
     }
-    
-    
-    
+
     public int getPuerto() {
-    	take_writer();
-    	int resul=this.puerto;
-    	puerto++;
-    	release_writer();
-		return resul;
-	}
+        take_writer();
+        int resul = this.puerto;
+        puerto++;
+        release_writer();
+        return resul;
+    }
 
-    //Funciones para poder escribir/leer
+    // Funciones para poder escribir/leer
 
-	private void take_writer() {
-    	l.lock();
+    /* FUNCIONES MONITORES */
+    private void take_writer() {
+        l.lock();
         while (nw > 0 || nr > 0) {
             try {
                 waitw++;
@@ -171,13 +179,13 @@ public class Servidor {
             } catch (InterruptedException e) {
                 System.out.println("dio un error en el oktowrite");
             }
-        }        
+        }
         nw++;
         l.unlock();
     }
-    
+
     private void take_reader() {
-    	l.lock();
+        l.lock();
         while (nw > 0 || waitw > 0) {
             try {
                 oktoread.wait();
@@ -188,21 +196,95 @@ public class Servidor {
         nr++;
         l.unlock();
     }
-    
+
     private void release_writer() {
-    	l.lock();
+        l.lock();
         nw--;
         oktowrite.signal();
         oktoread.signalAll();
         l.unlock();
     }
-    
-    private void release_reader(){
-    	l.lock();
+
+    private void release_reader() {
+        l.lock();
         nr--;
         if (nr == 0 && waitw > 0)
             oktowrite.signal();
         l.unlock();
+    }
+
+    /* FUNCIONES DE SEMÁFOROS */
+
+    private void take_reader_user() {
+        try {
+            body.acquire();
+            if (sem_nw > 0 || sem_waitingw > 0) {
+                sem_waitingr++;
+                body.release();
+                r.acquire();
+            }
+            sem_nr++;
+            if (sem_nw == 0 && sem_waitingw == 0) {
+                r.release();
+            } else {
+                body.release();
+            }
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+
+    }
+
+    private void release_reader_user() {
+        try {
+            body.acquire();
+            sem_nr--;
+            if (sem_waitingw > 0) {
+                sem_waitingw--;
+                w.release();// PT
+            } else if (sem_waitingr > 0) {
+                sem_waitingr--;
+                r.release();
+            } else {
+                body.release();
+            }
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+
+    }
+
+    private void take_writer_user() {
+        try {
+            body.acquire();
+            if (sem_nr > 0 || sem_nw > 0) {
+                sem_waitingw++;
+                body.release();
+                w.acquire();// PT
+            }
+            sem_nw++;
+            body.release();
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+    }
+
+    private void release_writer_user() {
+        try {
+            body.acquire();
+            sem_nw--;
+            if (sem_waitingw > 0) {
+                sem_waitingw--;
+                w.release();// PT
+            } else if (sem_waitingr > 0) {
+                sem_waitingr--;
+                r.release();// PT
+            } else {
+                body.release();
+            }
+        } catch (Exception e) {
+            System.err.println(e);
+        }
     }
 
 }

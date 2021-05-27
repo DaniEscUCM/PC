@@ -10,7 +10,7 @@ import java.io.ObjectOutputStream;
  * 
  * @author Daniela Escobar & Alessandro de Armas
  * 
- * 			Manda el fichero solicitado y espera a que le desbloqueen para cerrar la comunición con el Receptor.
+ *         Manda el fichero solicitado.
  *
  */
 
@@ -18,12 +18,10 @@ class Emisor extends Thread {
 
     private int puerto;
     private Fichero f;
-    //private LockBakery cerrojo;
 
     public Emisor(int puerto, Fichero f) {
         this.puerto = puerto;
         this.f = f;
-        //this.cerrojo = cerrojo;
     }
 
     @Override
@@ -35,7 +33,6 @@ class Emisor extends Thread {
 
             fout.writeObject(f);
 
-           // cerrojo.takeLock(1);
             s.close();
             listen.close();
         } catch (Exception e) {
