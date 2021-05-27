@@ -70,7 +70,7 @@ public class MainCliente {
 			// mainSemaphore.acquire();
 			lock.takeLock(0);
 			lock.takeLock(1);
-
+			lock.releaseLock(1);
 			while (go) {
 				lock.takeLock(0);
 				System.out.print("Introduzca una acci\u00f3n(help para ayuda):");

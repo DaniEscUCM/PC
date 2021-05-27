@@ -44,7 +44,7 @@ public class Servidor {
         this.puerto = puerto;
         r = new Semaphore(0);
         w = new Semaphore(0);
-        body = new Semaphore(0);
+        body = new Semaphore(1);
     }
 
     public boolean addUser(String id, String ip, ArrayList<String> shared, ObjectInputStream in,
