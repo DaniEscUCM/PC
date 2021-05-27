@@ -91,7 +91,7 @@ public class OyenteServidor extends Thread {
                     default: {
                         System.err.println("DANGER unknown message " + mensaje.getTipo());
                         cerrojo.releaseLock(0);
-                        ;
+                     
                         break;
 
                     }

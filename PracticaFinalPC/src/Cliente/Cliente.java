@@ -2,8 +2,6 @@ package Cliente;
 
 import Mensajes.Fichero;
 import java.util.*;
-//import java.util.concurrent.Semaphore;
-
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -21,8 +19,7 @@ public class Cliente {
 
     private String direccion_ip;
     private String id_usuario;
-    // private Semaphore sem;
-    // private LockBakery lock;
+    private LockBakery lock;
 
     // lista de los nombres de los ficheros que se tienen cargados
     ArrayList<String> shared_info = new ArrayList<String>();
@@ -35,10 +32,10 @@ public class Cliente {
     private Lock l = new ReentrantLock(true);
     private final Condition oktoread = l.newCondition(), oktowrite = l.newCondition();
 
-    public Cliente(String id_usuario, String direccion_ip) {// Semaphore sem
+    public Cliente(String id_usuario, String direccion_ip, LockBakery lock) {
         this.id_usuario = id_usuario;
         this.direccion_ip = direccion_ip;
-        // this.sem = sem;
+        this.lock=lock;
     }
 
     public String getIp() {
@@ -75,7 +72,8 @@ public class Cliente {
         shared_info.add(f.getName());
         info.put(f.getName(), f);
 
-        // sem.release();
+     
+        lock.releaseLock(0);
 
         release_writer();
     }

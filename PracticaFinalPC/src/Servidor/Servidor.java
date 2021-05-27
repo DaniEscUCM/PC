@@ -224,7 +224,7 @@ public class Servidor {
                 r.acquire();
             }
             sem_nr++;
-            if (sem_nw == 0 && sem_waitingw == 0) {
+            if (sem_nw == 0 && sem_waitingw > 0) {
                 r.release();
             } else {
                 body.release();

@@ -48,7 +48,7 @@ public class MainCliente {
 		String[] words = in.nextLine().toLowerCase().trim().split("\\s+");
 		String nombre_de_usuario = words[0];
 		String ip = words[1];
-		user = new Cliente(nombre_de_usuario, ip);
+		user = new Cliente(nombre_de_usuario, ip,lock);
 		System.out.print("Introduzca IP de servidor: ");
 		words = in.nextLine().toLowerCase().trim().split("\\s+");
 		server_ip = words[0];
