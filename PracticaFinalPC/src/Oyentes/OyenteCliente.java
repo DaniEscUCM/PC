@@ -88,7 +88,7 @@ public class OyenteCliente extends Thread {
                         Mensaje_Preparado_ClienteServidor men = (Mensaje_Preparado_ClienteServidor) m;
                         server.mandarMensaje(
                                 new Mensaje_Preparado_ServidorCliente("server", men.getDestinoFinal(), men.getIP(),
-                                        men.getPuerto(), men.getDestinoFinal(), men.getCerrojo()),
+                                        men.getPuerto(), men.getDestinoFinal()),
                                 men.getDestinoFinal());
                         break;
                     }

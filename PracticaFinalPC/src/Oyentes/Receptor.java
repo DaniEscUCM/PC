@@ -16,13 +16,13 @@ import Cliente.LockBakery;
 class Receptor extends Thread {
 
     private int puerto;
-    private LockBakery cerrojo;
+    //private LockBakery cerrojo;
     private String ip;
     private Semaphore s;
 
-    public Receptor(int puerto, String ip, Semaphore s, LockBakery cerrojo) {
+    public Receptor(int puerto, String ip, Semaphore s) {//, LockBakery cerrojo
         this.puerto = puerto;
-        this.cerrojo = cerrojo;
+       // this.cerrojo = cerrojo;
         this.ip = ip;
         this.s = s;
     }
@@ -39,7 +39,7 @@ class Receptor extends Thread {
             // muestro fichero//hacer algo
             s.release();// liberar c1
 
-            cerrojo.releaseLock(0);// liberar c2
+            //cerrojo.releaseLock(0);// liberar c2
             socket.close();
         } catch (Exception e) {
             e.printStackTrace();

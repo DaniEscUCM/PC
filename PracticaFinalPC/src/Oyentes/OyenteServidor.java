@@ -69,18 +69,18 @@ public class OyenteServidor extends Thread {
                         Mensaje_Emitir_Fichero men = (Mensaje_Emitir_Fichero) mensaje;
 
                        //int puerto = cliente.getPuerto();
-                        LockBakery l = new LockBakery(2);
-                        l.takeLock(0);
+                       // LockBakery l = new LockBakery(2);
+                      //  l.takeLock(0);
 
-                        new Emisor(men.getPuerto(), cliente.getFile(men.getNombreFichero()), l).start();
+                        new Emisor(men.getPuerto(), cliente.getFile(men.getNombreFichero())).start();
 
                         fout.writeObject(new Mensaje_Preparado_ClienteServidor(cliente.getId(), "server",
-                                cliente.getIp(), men.getPuerto(), men.getEmisor(), l));
+                                cliente.getIp(), men.getPuerto(), men.getEmisor()));
                         break;
                     }
                     case "Mensaje_Preparado_ServidorCliente": {
                         Mensaje_Preparado_ServidorCliente men = (Mensaje_Preparado_ServidorCliente) mensaje;
-                        (new Receptor(men.getPuerto(), men.getIp(), sem, men.getCerrojo())).start();
+                        (new Receptor(men.getPuerto(), men.getIp(), sem)).start();
                         break;
                     }
                     case "Mensaje_Error_Fichero": {

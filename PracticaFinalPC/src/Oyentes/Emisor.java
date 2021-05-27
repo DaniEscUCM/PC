@@ -4,8 +4,6 @@ import Mensajes.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import Cliente.LockBakery;
-
 import java.io.ObjectOutputStream;
 
 /**
@@ -20,12 +18,12 @@ class Emisor extends Thread {
 
     private int puerto;
     private Fichero f;
-    private LockBakery cerrojo;
+    //private LockBakery cerrojo;
 
-    public Emisor(int puerto, Fichero f, LockBakery cerrojo) {
+    public Emisor(int puerto, Fichero f) {
         this.puerto = puerto;
         this.f = f;
-        this.cerrojo = cerrojo;
+        //this.cerrojo = cerrojo;
     }
 
     @Override
@@ -37,7 +35,7 @@ class Emisor extends Thread {
 
             fout.writeObject(f);
 
-            cerrojo.takeLock(1);
+           // cerrojo.takeLock(1);
             s.close();
             listen.close();
         } catch (Exception e) {
